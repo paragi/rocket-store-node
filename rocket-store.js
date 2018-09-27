@@ -40,7 +40,7 @@ var rocketstore = function(options){
               fs.realpathSync(os.tmpdir())
             + path.sep
             + "rocket_store"
-            + path.sep
+            + path.sep 
         ;
 
     if(    typeof(option.data_format) === "number"
