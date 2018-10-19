@@ -9,26 +9,34 @@
 
     Usages:
 
-    const rocketstore = require('rocket-store');
+    const rs = require('rocket-store');
 
-    result = rs.post( collection, key, record [, options])
-    result = rs.get( collection, key [, options])
-    result = rs.delete( collection, key)
+    result = await rs.post( collection, key, record [, options])
+    result = await rs.get( collection, key [, options])
+    result = await rs.delete( collection, key)
 
     To chamge default options, call rs with an options object.
     Example:
-        rs( {data_format:rs._FORMAT_NATIVE, data_storage_area:  "./data"} );
+        await rs( {data_format:rs._FORMAT_NATIVE, data_storage_area:  "./data"} );
+    or
+        await rs.set_options({data_format:rs._FORMAT_NATIVE, data_storage_area:  "./data"});
+
 
 
 \*============================================================================*/
-const fs = require('fs');
-const os = require('os');
+const fs = require('fs-extra')
+const sanitize = require("sanitize-filename");
+const lockfile = require('proper-lockfile');
 const path = require('path');
+const os = require('os');
+//const pathExists = require('path-exists');
 
-// Define module object
-const rocketstore = function(set_option){
+/*========================================================================*\
+  Define module object
+\*========================================================================*/
+const rocketstore = async (set_option) => {
     if( typeof(set_option) !== "undefined")
-        rocketstore.setOptions(set_option);
+        await rocketstore.setOptions(set_option);
     return rocketstore;
 };
 
@@ -54,27 +62,52 @@ rocketstore._FORMAT_XML   = 0x04; // Not implemened
 rocketstore._FORMAT_PHP   = 0x08;
 
 // Set default options
+
+// ! brug fs.mkdtemp
 rocketstore.data_format         = rocketstore._FORMAT_NATIVE;
-rocketstore.data_storage_area   = path.normalize(os.tmpdir() + "/rocket_store");
+rocketstore.data_storage_area   = path.normalize(os.tmpdir() + "/rsdb");
 
 /*========================================================================*\
   Post a data record (Insert or overwrite)
 \*========================================================================*/
-rocketstore.post = async (collection, key, record ,flags) => {
-    if(typeof(flags) !=="number") flags = 0;
+rocketstore.post = async (collection, key_request, record ,flags) => {
+    let new_key = "";
+    let key = "";
+    let sequence = 0;
 
     if(typeof(collection) !=="string"
         || typeof(collection) !=="number"
         || collection.length < 1)
-        return {"error":"No valid collection name given", "count":0};
+        throw new Error('No valid collection name given');
 
+    if(typeof(key_request) == "string" || typeof(key_request) =="number")
+        key = sanitize("" + key_request);
 
+    if(typeof(flags) !=="number")
+        flags = 0;
 
-            // Set default data storage area to OS temporary directory
-            this.option.data_storage_area = fs.realpathSync(this.option.data_storage_area);
+    // Insert a sequence
+    if(key.length < 1 || (flags & rocketstore._ADD_AUTO_INC)) {
+        let sequence = await sequence(collection);
+        new_key += sequence;
 
+        if(key.length > 0)
+            new_key += '-' + key;
+    }
 
+    // Write to file
+    if(rocketstore.data_format & rocketstore._FORMAT_JSON)
+        await fs.outputJson(
+            rocketstore.data_storage_area
+            + path.sep
+            + file_name
+            , record
+        );
 
+    else
+        throw new Error('Sorry, dataformat not supported');
+
+    return {key: key, count: 1};
 }
 
 /*========================================================================*\
@@ -94,42 +127,58 @@ const rocketstore.delete = async ($collection = null, $key = null){
 /*========================================================================*\
   Set options
 \*========================================================================*/
-rocketstore.setOptions = function(set_option){
-    let success = true;
+rocketstore.setOptions = async (set_option) => {
     // Format
-    if( typeof(set_option.data_format) === "number" )
-        if( set_option.data_format & (
+    if( typeof(set_option.data_format) !== "undefined" )
+        if( typeof(set_option.data_format) === "number" ){
+            if( set_option.data_format & (
                   rocketstore._FORMAT_JSON
-                | rocketstore._FORMAT_XML )
-        )
-            rocketstore.option.data_format = set_option.data_format;
-        else
-            success = false;
+                | rocketstore._FORMAT_XML
+                | rocketstore._FORMAT_NATIVE)
+            )
+                rocketstore.data_format = set_option.data_format;
+
+        }else
+            throw new Error (`Unknown data format: '${set_option.data_format}'`);
 
     // Set native data format
     if( rocketstore.data_format == rocketstore._FORMAT_NATIVE )
         rocketstore.data_format = rocketstore._FORMAT_JSON;
 
     // Data storage area
-    if( typeof(set_option.data_storage_area) === "string"){
+    if(    typeof(set_option.data_storage_area) === "string"
+        || typeof(set_option.data_storage_area) === "number"
+        ){
+            let dir = path.resolve(set_option.data_storage_area);
+            await fs.ensureDir(dir, {mode: 02775});
+            rocketstore.data_storage_area = dir;
+
+    }else if ( typeof(set_option.data_storage_area) !== "undefined" )
+        throw new Error (`Data storage area must be a directory path`);
+}
+
+/*========================================================================*\
+  increment (or create) a sequence
+
+  Return count or negative value when failing
+\*========================================================================*/
+async function sequence(seq_name){
+    let sequence = 0;
+    let name = sanitize(seq_name);
+
+    if(typeof(name) !=="string" || collection.length < 1)
+        return reject(new Error('Sequence name i messed up'));
+
+    let file = rocketstore.data_storage_area + path.sep + name + '_seq';
+    let release = await lockfile.lock(file);
+    sequence = await fs.readFile(file,'utf8');
+    fs.outputFile(file,++sequence)
+    .then( (result) => {
+        console.log(`Sqeuence ${file} = ${sequence}`);
         rocketstore.data_storage_area = set_option.data_storage_area;
 
-        let dir = path.dirname(set_option.data_storage_area)
-        console.log("path: " + dir);
-        fs.access(dir, fs.constants.F_OK | fs.constants.W_OK, (err) => {
-            if (err)
-                console.error("Unable to write to " + dir);
-            else
-                console.log("Dir ok");
-          
-      });
-    }
-}
+    })
+    .catch ((err) => {throw err});
 
-rocketstore.test = async () => {
-    return {error: "All is well :)"};
-}
-
-rocketstore.test2 = function() {
-    return {error: "All is well :)"};
+    return sequence;
 }
