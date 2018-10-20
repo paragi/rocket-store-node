@@ -75,32 +75,29 @@ rocketstore.post = async (collection, key_request, record ,flags) => {
     let key = "";
     let sequence = 0;
 
-    if(typeof(collection) !=="string"
-        || typeof(collection) !=="number"
-        || collection.length < 1)
-        throw new Error('No valid collection name given');
-
-    if(typeof(key_request) == "string" || typeof(key_request) =="number")
-        key = sanitize("" + key_request);
+    if(typeof collection !== "number" &&
+        (typeof collection !== "string" || collection.length < 1) )
+            throw new Error('No valid collection name given');
 
     if(typeof(flags) !=="number")
         flags = 0;
 
+    key = sanitize("" + key_request);
+
     // Insert a sequence
     if(key.length < 1 || (flags & rocketstore._ADD_AUTO_INC)) {
-        let sequence = await sequence(collection);
-        new_key += sequence;
-
-        if(key.length > 0)
-            new_key += '-' + key;
+        let sequence = await rocketstore.sequence(collection);
+        key = `${sequence}-${key}`;
     }
-
+console.log("Post:",collection, key, record ,flags);
     // Write to file
     if(rocketstore.data_format & rocketstore._FORMAT_JSON)
         await fs.outputJson(
             rocketstore.data_storage_area
             + path.sep
-            + file_name
+            + collection
+            + path.sep
+            + key
             , record
         );
 
@@ -123,6 +120,33 @@ const rocketstore.delete = async ($collection = null, $key = null){
     return this->get(collection,key,null,null,_DELETE);
 }
 */
+
+/*========================================================================*\
+  Get and auto incremented sequence or create it
+  Return count
+\*========================================================================*/
+rocketstore.sequence = async (seq_name) => {
+    let sequence = 0;
+    let name = sanitize(seq_name);
+
+    if(typeof(name) !=="string" || name.length < 1)
+        throw new Error('Sequence name i messed up');
+
+    let file_name = rocketstore.data_storage_area + path.sep + name + '_seq';
+    try{
+        const release = await lockfile.lock(file_name);
+        sequence = parseInt(await fs.readFile(file_name,'utf8'));
+    }catch(err){
+        sequence = 0;
+    }
+
+    await fs.outputFile(file_name,++sequence);
+console.log(`Sqeuence ${file_name} = ${sequence}`);
+    release();
+
+    return sequence;
+}
+
 
 /*========================================================================*\
   Set options
@@ -157,28 +181,8 @@ rocketstore.setOptions = async (set_option) => {
         throw new Error (`Data storage area must be a directory path`);
 }
 
+
+
 /*========================================================================*\
-  increment (or create) a sequence
-
-  Return count or negative value when failing
+                            Internal functions
 \*========================================================================*/
-async function sequence(seq_name){
-    let sequence = 0;
-    let name = sanitize(seq_name);
-
-    if(typeof(name) !=="string" || collection.length < 1)
-        return reject(new Error('Sequence name i messed up'));
-
-    let file = rocketstore.data_storage_area + path.sep + name + '_seq';
-    let release = await lockfile.lock(file);
-    sequence = await fs.readFile(file,'utf8');
-    fs.outputFile(file,++sequence)
-    .then( (result) => {
-        console.log(`Sqeuence ${file} = ${sequence}`);
-        rocketstore.data_storage_area = set_option.data_storage_area;
-
-    })
-    .catch ((err) => {throw err});
-
-    return sequence;
-}
