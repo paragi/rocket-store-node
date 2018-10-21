@@ -137,6 +137,7 @@ rocketstore.sequence = async (seq_name) => {
         const release = await lockfile.lock(file_name);
         sequence = parseInt(await fs.readFile(file_name,'utf8'));
     }catch(err){
+        console.log(err);
         sequence = 0;
     }
 

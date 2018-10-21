@@ -131,6 +131,20 @@ testcases = async () => {
         { count: 1 },
     );
 
+    await tst(
+        "Create a sequence",
+        rs.sequence,
+        ["first"],
+        { count: 1 },
+    );
+
+    await tst(
+        "Increment sequence",
+        rs.sequence,
+        ["first"],
+        { count: 2 },
+    );
+
 
      /*
 
@@ -329,4 +343,20 @@ toben();
 
 toben.sum(2);
 toben.sum(5);
+
+tt = () => {
+    console.log("tt Start");
+    const promise = new Promise((resolve, reject) => {
+        setTimeout(() => {resolve();}, 1000)
+    });
+    console.log("tt promise returned");
+
+    promise.then( () =>{
+        console.log("tt in promise then");
+    });
+
+    console.log("tt ending");
+};
+
+tt();
 */
