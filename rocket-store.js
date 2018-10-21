@@ -70,10 +70,7 @@ rocketstore.data_storage_area   = path.normalize(os.tmpdir() + "/rsdb");
 /*========================================================================*\
   Post a data record (Insert or overwrite)
 \*========================================================================*/
-rocketstore.post = async (collection, key_request, record ,flags) => {
-    let new_key = "";
-    let key = "";
-    let sequence = 0;
+rocketstore.post = async (collection, key, record ,flags) => {
 
     if(typeof collection !== "number" &&
         (typeof collection !== "string" || collection.length < 1) )
@@ -82,14 +79,14 @@ rocketstore.post = async (collection, key_request, record ,flags) => {
     if(typeof(flags) !=="number")
         flags = 0;
 
-    key = sanitize("" + key_request);
+    key = sanitize("" + key);
 
     // Insert a sequence
-    if(key.length < 1 || (flags & rocketstore._ADD_AUTO_INC)) {
-        let sequence = await rocketstore.sequence(collection);
-        key = `${sequence}-${key}`;
+    if(key.length < 1 || (flags & rocketstore._ADD_AUTO_INC)){
+        const sequence = await rocketstore.sequence(collection);
+        key = key.length > 0 ? `${sequence}-${key}` : '' + sequence;
     }
-console.log("Post:",collection, key, record ,flags);
+
     // Write to file
     if(rocketstore.data_format & rocketstore._FORMAT_JSON)
         await fs.outputJson(
@@ -102,7 +99,7 @@ console.log("Post:",collection, key, record ,flags);
         );
 
     else
-        throw new Error('Sorry, dataformat not supported');
+        throw new Error('Sorry, that data format is not supported');
 
     return {key: key, count: 1};
 }
@@ -128,22 +125,24 @@ const rocketstore.delete = async ($collection = null, $key = null){
 rocketstore.sequence = async (seq_name) => {
     let sequence = 0;
     let name = sanitize(seq_name);
+    let release;
 
     if(typeof(name) !=="string" || name.length < 1)
         throw new Error('Sequence name i messed up');
 
     let file_name = rocketstore.data_storage_area + path.sep + name + '_seq';
     try{
-        const release = await lockfile.lock(file_name);
+        release = await lockfile.lock(file_name);
         sequence = parseInt(await fs.readFile(file_name,'utf8'));
     }catch(err){
-        console.log(err);
+        if(err.code != 'ENOENT')
+            throw err;
         sequence = 0;
     }
 
     await fs.outputFile(file_name,++sequence);
-console.log(`Sqeuence ${file_name} = ${sequence}`);
-    release();
+    if( typeof release === "function" )
+        release();
 
     return sequence;
 }

@@ -76,6 +76,7 @@ testcases = async () => {
         data_storage_area   : rs.data_storage_area,
     }
 
+    // setOptions
     await tst(
         "Bad data format option",
         rs.setOptions,
@@ -89,6 +90,7 @@ testcases = async () => {
         [{data_storage_area: "./rs/sdgdf/",data_format: rs._FORMAT_NATIVE}],
         rs,
     );
+
     fs.remove("./rs")
 
     await tst(
@@ -97,7 +99,6 @@ testcases = async () => {
         [{data_storage_area: "/rsdb/sdgdf/",data_format: rs._FORMAT_NATIVE}],
         "EACCES: permission denied, mkdir '/rsdb'",
     );
-    fs.remove("./rs")
 
     await tst(
         "Set options",
@@ -106,6 +107,7 @@ testcases = async () => {
     );
     console.table(defaults);
 
+    // Post and sequence
     let record = {
         id          : "22756",
         name        : "Adam Smith",
@@ -124,6 +126,22 @@ testcases = async () => {
         { key: '22756-Adam Smith', count: 1 },
     );
 
+    fs.remove(`${rs.data_storage_area}/first_seq`);
+
+    await tst(
+        "Create a sequence",
+        rs.sequence,
+        ["first"],
+        1,
+    );
+
+    await tst(
+        "Increment sequence",
+        rs.sequence,
+        ["first"],
+        2,
+    );
+
     await tst(
         "Post a record, where key is empty",
         rs.post,
@@ -132,46 +150,23 @@ testcases = async () => {
     );
 
     await tst(
-        "Create a sequence",
-        rs.sequence,
-        ["first"],
+        "Post with auto incremented added to key",
+        rs.post,
+        ["person","key",record,rs._ADD_AUTO_INC],
         { count: 1 },
     );
 
     await tst(
-        "Increment sequence",
-        rs.sequence,
-        ["first"],
-        { count: 2 },
+        "Post with auto incremented key only",
+        rs.post,
+        ["person","",record,rs._ADD_AUTO_INC],
+        { count: 1 },
     );
+
+    // get
 
 
      /*
-
-
-    test("Post"
-        ,$rs->post($collection,"{$record['id']}-{$record['name']}",$record)
-        ,1
-    );
-
-    test("Create sequence"
-        ,["error" => "", "count" => $rs->sequence("{$collection}_seq") ]
-        ,1
-    );
-
-    test("Post with empty key -> auto incremented key"
-        ,$rs->post($collection,"",$record)
-        ,1
-    );
-
-    test("Post with auto incremented key only"
-       ,$rs->post($collection,"",$record,RS_ADD_AUTO_INC)
-    );
-
-    test("Post with auto increment added to key"
-        ,$rs->post($collection,"{$record['name']}",$record,RS_ADD_AUTO_INC)
-        ,1
-    );
 
     test("Get with exact key"
         ,$rs->get($collection,"{$record['id']}-{$record['name']}")
@@ -282,6 +277,8 @@ testcases = async () => {
         ,7
     );
     */
+
+    fs.remove(rs.data_storage_area);
 
     await tst.sum();
 };
