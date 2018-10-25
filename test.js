@@ -163,6 +163,24 @@ testcases = async () => {
         { count: 1 },
     );
 
+    await tst(
+        "Post a record, where collection is empty",
+        rs.post,
+        ["","bad",record],
+        'No valid collection name given',
+    );
+
+    await tst(
+        "Post a record, where collection name only has illigal chars",
+        rs.post,
+        ["\x00./.\x00","bad",record],
+        'No valid collection name given',
+    );
+
+    const sanitize = require("sanitize-filename");
+    console.log("->" + sanitize("com1:") + "<-");
+    // displays: -><-
+
     // get
 
 
@@ -278,12 +296,12 @@ testcases = async () => {
     );
     */
 
-    fs.remove(rs.data_storage_area);
+    //fs.remove(rs.data_storage_area);
 
     await tst.sum();
 };
 
-testcases();
+//testcases();
 
 /*
 (async () => {
@@ -357,3 +375,169 @@ tt = () => {
 
 tt();
 */
+
+
+const fg = require('fast-glob');
+const path = require('path');
+
+const glob_options = {
+    deep: 1,
+    dot: true,
+    brace: false,
+    extension: false,
+}
+
+var collection = 'person';
+
+
+fs.outputJson(
+    rs.data_storage_area
+    + path.sep
+    + collection
+    + path.sep
+    + '.test'
+    , {record: "test data"}
+);
+
+fs.outputJson(
+    rs.data_storage_area
+    + path.sep
+    + collection
+    + path.sep
+    + '..test'
+    , {record: "test data"}
+);
+
+fs.outputJson(
+    rs.data_storage_area
+    + path.sep
+    + collection
+    + path.sep
+    + '.{te}st'
+    , {record: "test data"}
+);
+
+fs.outputJson(
+    rs.data_storage_area
+    + path.sep
+    + collection
+    + path.sep
+    + '..<{te}st>|'
+    , {record: "test data"}
+);
+
+fs.outputJson(
+    rs.data_storage_area
+    + path.sep
+    + collection
+    + path.sep
+    + '      t'
+    , {record: "test data"}
+);
+
+fs.outputJson(
+    rs.data_storage_area
+    + path.sep
+    + collection
+    + path.sep
+    + 't{es|t,ing}'
+    , {record: "test data"}
+);
+
+/*
+  NB: A note on memory usages:
+
+  The node implementation of rocket-store, cashes all filenames of a collection, in memory.
+
+  On a filesystem with many files (10^6+) it consumes a lot of memory to store all filenames in an array.
+
+  As of node v10, the readdir function will return an array of all files in a directory. There is no other way around it, than using another binary library function than libuv.
+
+  Since all wildcard searches will use readdir, we might aswell take advantage of the already allocated data, and reuse it for speed.
+
+  The cashing functionality will probably be removed, when node fs has matured, to only return one filename, at a time.
+
+  Until then memory size limits the number of records, to a collection.
+
+*/
+
+//const path = require('path');
+const globToRegExp = require('glob-to-regexp');
+
+var key_cash ={};
+
+const get = async ( pattern ) => {
+  let glob;
+  let list = [];
+
+  // With wildcards
+  if( pattern.indexOf('*') > -1 || pattern.indexOf('?') > -1 ) {
+    //glob = pattern.replace(/[*]{2,}/g, ''); // No globstars**
+    // fileNameWash
+
+    key_cash[collection] =
+      await fs.readdir(rs.data_storage_area + '/' + collection);
+    let regex = globToRegExp(pattern);
+
+console.log("Search for:", pattern,regex);
+//console.table(key_cash[collection]);
+
+    for( let i in key_cash[collection])
+      if( regex.test(key_cash[collection][i]) )
+        list[list.length] = key_cash[collection][i] // 10 x faster than push etc.
+
+  // Without wildcards
+  } else {
+    list = [ pattern ];
+  }
+
+  return list;
+/*
+
+var glob = rs.data_storage_area + '/' + collection //+ '/' + search;
+console.log("Search for:", glob);
+fs.readdir(glob,glob_options)
+.then((entries) => console.log(1,entries))
+.catch((err) => console.error(err));
+
+
+    for( let file in list ){
+          let filehandle;
+          try {
+            filehandle = await fs.open('thefile.txt', 'r');
+          } finally {
+            if (filehandle !== undefined)
+              await filehandle.close();
+          }
+        }
+
+        fs.readFile('/etc/passwd', 'utf8', callback);
+        filehandle.readFile(options)
+
+        Added in: v10.0.0
+
+            options <Object> | <string>
+                encoding <string> | <null> Default: null
+    }
+
+    .then((entries) => console.log(1,entries));
+*/
+
+}
+
+var search;
+search = "*test"; get(search).then((entries) => console.log(search,console.table(entries)));
+//search = "?*"; get(search).then((entries) => console.log(search,entries));
+//search = "test-ole"; get(search).then((entries) => console.log(search,entries));
+
+/*
+search = "t{es|t,ing}";
+glob = rs.data_storage_area + '/' + collection + '/' + search;
+console.log("Search for:", glob);
+fg(glob,glob_options).then((entries) => console.log(2,entries));
+*/
+
+//fg.async(['src/**/*.js', '!src/**/*.spec.js'])
+//.then((entries) => console.log(entries));
+
+console.table(process.memoryUsage());

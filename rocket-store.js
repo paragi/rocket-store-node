@@ -1,5 +1,5 @@
 /*============================================================================*\
-    Rocket Store (Rocket store)
+    Rocket Store
 
     A very simple and yes powerfull file storage.
 
@@ -11,17 +11,14 @@
 
     const rs = require('rocket-store');
 
-    result = await rs.post( collection, key, record [, options])
-    result = await rs.get( collection, key [, options])
+    result = await rs.post( collection, [key], record [, options])
+    result = await rs.get( collection, key/search [, options])
     result = await rs.delete( collection, key)
 
-    To chamge default options, call rs with an options object.
-    Example:
-        await rs( {data_format:rs._FORMAT_NATIVE, data_storage_area:  "./data"} );
-    or
-        await rs.set_options({data_format:rs._FORMAT_NATIVE, data_storage_area:  "./data"});
+    await rs.set_options({data_format: FORMAT_CONST, data_storage_area: path})
+    await rs( {data_format: FORMAT_CONST, data_storage_area: path} )
 
-
+    number = rs.sequence( name )
 
 \*============================================================================*/
 const fs = require('fs-extra')
@@ -29,7 +26,7 @@ const sanitize = require("sanitize-filename");
 const lockfile = require('proper-lockfile');
 const path = require('path');
 const os = require('os');
-//const pathExists = require('path-exists');
+const fg = require('fast-glob');
 
 /*========================================================================*\
   Define module object
@@ -57,9 +54,9 @@ rocketstore._ADD_AUTO_INC = 0x40;
 
 // Data storage format options
 rocketstore._FORMAT_JSON  = 0x01;
-rocketstore._FORMAT_NATIVE= 0x02;
+rocketstore._FORMAT_NATIVE= 0x02; // resolves to JSON
 rocketstore._FORMAT_XML   = 0x04; // Not implemened
-rocketstore._FORMAT_PHP   = 0x08;
+rocketstore._FORMAT_PHP   = 0x08; // Not implemened
 
 // Set default options
 
@@ -72,14 +69,14 @@ rocketstore.data_storage_area   = path.normalize(os.tmpdir() + "/rsdb");
 \*========================================================================*/
 rocketstore.post = async (collection, key, record ,flags) => {
 
-    if(typeof collection !== "number" &&
-        (typeof collection !== "string" || collection.length < 1) )
-            throw new Error('No valid collection name given');
+    collection = fileNameWash( "" + collection );
+    if( collection.length < 1 )
+        throw new Error('No valid collection name given');
 
     if(typeof(flags) !=="number")
         flags = 0;
 
-    key = sanitize("" + key);
+    key = fileNameWash("" + key);
 
     // Insert a sequence
     if(key.length < 1 || (flags & rocketstore._ADD_AUTO_INC)){
@@ -106,8 +103,44 @@ rocketstore.post = async (collection, key, record ,flags) => {
 
 /*========================================================================*\
   Get one or more records or list all collections (or delete it)
-\*========================================================================
-const rocketstore.get = async (collection = '', key = '', min_time = null , max_time = null, flags = 0){
+\*========================================================================*/
+rocketstore.get = async (collection, key, min_time, max_time, flags) => {
+}
+/*
+
+public function get($collection = '', $key = '', $min_time = null , $max_time = null, $flags = 0){
+
+    $collection = $this->path_safe($collection);
+    $key = $this->path_safe($key,true);
+
+    $path = $this->data_storage_area . $collection . DIRECTORY_SEPARATOR . $key;
+    $path .= !($flags & RS_DELETE) && empty($key) ? "*" : "";
+    $count = 0;
+    $result = [];
+    $hit = glob($path, $flags & (RS_ORDER | RS_ORDER_DESC) ? null : GLOB_NOSORT);
+    foreach($hit as $full_path){
+        // delete
+        if($flags & RS_DELETE){
+           $count += $this->recursive_file_delete($full_path);
+
+        // Read record
+        }else{
+            $i = @substr($full_path,strrpos($full_path,DIRECTORY_SEPARATOR) + 1);
+            if($flags & RS_LOCK) flock($full_path);
+            if($this->data_format & RS_FORMAT_JSON)
+                $result[$i] = @json_decode(@file_get_contents($full_path),true);
+            else
+                $result[$i] = @unserialize(@file_get_contents($full_path));
+            $count++;
+        }
+    }
+
+    return [
+         "error" => ""
+        ,"result" => $flags & RS_ORDER_DESC ? array_reverse($result) : $result
+        ,"count" => $count
+    ];
+}
 
 }
 /*========================================================================*\
@@ -120,11 +153,10 @@ const rocketstore.delete = async ($collection = null, $key = null){
 
 /*========================================================================*\
   Get and auto incremented sequence or create it
-  Return count
 \*========================================================================*/
 rocketstore.sequence = async (seq_name) => {
     let sequence = 0;
-    let name = sanitize(seq_name);
+    let name = fileNameWash(seq_name);
     let release;
 
     if(typeof(name) !=="string" || name.length < 1)
@@ -181,8 +213,13 @@ rocketstore.setOptions = async (set_option) => {
         throw new Error (`Data storage area must be a directory path`);
 }
 
-
-
 /*========================================================================*\
                             Internal functions
 \*========================================================================*/
+function fileNameWash( name ){
+    if( os.platform() == 'win32' )
+        return sanatize(name);
+    else{
+        return name.replace(/[\/\x00~]/g, '').replace(/[.]{2,}/g, '');
+    }
+}
