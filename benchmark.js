@@ -12,20 +12,39 @@
   Some results:
 
   PHP: System: i7 3rd gen on SSD
-  Mass insert: 31601/sec.
-  Exact key search 1 hit: 25623/sec.
-  Exact key search not found: 235735/sec.
-  Wildcard key search 2 hits: 2.25/sec.
-  Wildcard key delete 2 hits: 2.22/sec.
-  Excat key delete 1 hits: 29852/sec.
-  Delete collection: 44355/sec.
+  ┌───────────────────────────────────┬─────────────┐
+  │ Mass insert                       │ 31601 /sec  │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact random key search           │ 25623 /sec  │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact ramdom key search no hit    │ 235735 /sec │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom key search 2 hits │ 2.25 /sec   │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom key search no hit │             │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom delete 2 hits     │ 2.22 /sec   │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact random delete               │ 29852 /sec  │
+  └───────────────────────────────────┴─────────────┘
+
 
   Node: System: i7 3rd gen on SSD
-  ┌─────────────────────────┬────────────────┐
-  │ Mass insert:            │ '73104 /sec'   │
-  ├─────────────────────────┼────────────────┤
-  │ Exact key search 1 hit: │ '85778 /sec'   │
-  └─────────────────────────┴────────────────┘
+  ┌───────────────────────────────────┬─────────────┐
+  │ Mass insert                       │ 69434 /sec  │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact random key search           │ 86775 /sec  │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact ramdom key search no hit    │ 123304 /sec │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom key search 2 hits │ 14.6 /sec   │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom key search no hit │ 15.5 /sec   │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom delete 2 hits     │ 15.5 /sec   │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact random delete               │ 325.7 /sec  │
+  └───────────────────────────────────┴─────────────┘
 
 
 \*============================================================================*/
@@ -35,7 +54,7 @@ const fs = require('fs-extra');
 const data_create = true;
 const data_delete = false;
 var data_size   = 1000000;
-//data_size   = 100;
+
 
 const record = [
   {
@@ -80,14 +99,16 @@ const record = [
   console.log("Collection dir:", rs.data_storage_area + collection);
   console.log("Bench mark test", "System: i7 3rd gen on SSD");
 
+/*===========================================================================*/
+
   if(data_create){
+    test_name = "Mass insert";
+
     console.time('Process time');
     console.log("Deleting test data if any");
     await fs.remove(rs.data_storage_area);
     console.timeEnd('Process time');
-  }
 
-  if(data_create) {
     console.log("Creating 1.000.000 test files. Please wait");
     console.time('Process time');
     start = Date.now();
@@ -105,21 +126,16 @@ const record = [
         stack1 = [];
     }
 
-    end = Date.now();
-
-    benchmark["Mass insert:"] =  data_size / ((end-start)/1000) + " /sec";
-    console.table(benchmark["Mass insert:"]);
-    console.timeEnd('Process time');
+  end = Date.now();
+  benchmark[test_name] =  data_size / ((end-start)/1000) + " /sec";
+    console.table(benchmark[test_name]);
+  console.timeEnd('Process time');
   }
 
-/*
-  console.time('Exact key search 1 hit:');
-    for( let i = 0; i < 10000; i++ )
-      for( let r in record )
-        rs.post(collection,`${record['id']}-${record['name']}`,record[r]);
-*/
+/*===========================================================================*/
 
-  console.log("Exact random key search: ");
+  test_name = "Exact random key search";
+  console.log(test_name);
   console.time('Process time');
   start = Date.now();
 
@@ -141,12 +157,161 @@ const record = [
   }
 
   end = Date.now();
-  benchmark["Exact key search 1 hit:"] =  data_size / ((end-start)/1000) + " /sec";
-    console.table(benchmark["Exact key search 1 hit:"]);
+  benchmark[test_name] =  data_size / ((end-start)/1000) + " /sec";
+    console.table(benchmark[test_name]);
   console.timeEnd('Process time');
 
-  console.table(benchmark);
+/*===========================================================================*/
 
+  test_name = "Exact ramdom key search no hit";
+  console.log(test_name);
+  console.time('Process time');
+  start = Date.now();
+
+  for( let i = 0; i < data_size/10 ; i++ ){
+    for(let ii=0; ii < 20; ii++, i++)
+      for( let r in record )
+        stack1[stack1.length]
+          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-1-XAdam Smith`);
+
+      if(stack2.length > 0) await Promise.all(stack2);
+      stack2 = [];
+
+    for(let ii=0; ii < 20; ii++, i++)
+      for( let r in record )
+        stack2[stack2.length]
+          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-1-XAdam Smith`);
+    if(stack1.length > 0) await Promise.all(stack1);
+    stack1 = [];
+  }
+
+  end = Date.now();
+  benchmark[test_name] =  data_size / ((end-start)/1000) + " /sec";
+    console.table(benchmark[test_name]);
+  console.timeEnd('Process time');
+
+/*===========================================================================*/
+
+  test_name = "Wildcard ramdom key search 2 hits";
+
+  // Fill cash
+  await rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+
+  console.log(test_name);
+  console.time('Process time');
+  start = Date.now();
+
+  // Fill cash
+  await rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+
+  for( let i = 0; i < 40 ; i++ ){
+    for(let ii=0; ii < 20; ii++, i++)
+        stack1[stack1.length]
+          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+
+      if(stack2.length > 0) await Promise.all(stack2);
+      stack2 = [];
+
+    for(let ii=0; ii < 20; ii++, i++)
+        stack2[stack2.length]
+          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+    if(stack1.length > 0) await Promise.all(stack1);
+    stack1 = [];
+  }
+
+  end = Date.now();
+  benchmark[test_name] =  41 / ((end-start)/1000) + " /sec";
+    console.table(benchmark[test_name]);
+  console.timeEnd('Process time');
+
+/*===========================================================================*/
+
+  test_name = "Wildcard ramdom key search no hit";
+
+  console.log(test_name);
+  console.time('Process time');
+  start = Date.now();
+
+  for( let i = 0; i < 40 ; i++ ){
+    for(let ii=0; ii < 20; ii++, i++)
+        stack1[stack1.length]
+          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Spanoly`);
+
+      if(stack2.length > 0) await Promise.all(stack2);
+      stack2 = [];
+
+    for(let ii=0; ii < 20; ii++, i++)
+        stack2[stack2.length]
+          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Spanoly`);
+    if(stack1.length > 0) await Promise.all(stack1);
+    stack1 = [];
+  }
+
+  end = Date.now();
+  benchmark[test_name] =  40 / ((end-start)/1000) + " /sec";
+    console.table(benchmark[test_name]);
+  console.timeEnd('Process time');
+
+/*===========================================================================*/
+
+  test_name = "Wildcard ramdom delete 2 hits";
+
+  console.log(test_name);
+  console.time('Process time');
+  start = Date.now();
+
+  for( let i = 0; i < 40 ; i++ ){
+    for(let ii=0; ii < 20; ii++, i++)
+      stack1[stack1.length]
+        = rs.delete(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+
+    if(stack2.length > 0) await Promise.all(stack2);
+    stack2 = [];
+
+    for(let ii=0; ii < 20; ii++, i++)
+      stack2[stack2.length]
+        = rs.delete(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+    if(stack1.length > 0) await Promise.all(stack1);
+    stack1 = [];
+  }
+
+  end = Date.now();
+  benchmark[test_name] =  40 / ((end-start)/1000) + " /sec";
+    console.table(benchmark[test_name]);
+  console.timeEnd('Process time');
+
+/*===========================================================================*/
+
+  test_name = "Exact random delete";
+
+  console.log(test_name);
+  console.time('Process time');
+  start = Date.now();
+
+  for( let i = 0; i < 100 ; i++ ){
+    for(let ii=0; ii < 5; ii++, i++)
+      stack1[stack1.length]
+        = rs.delete(collection,`${Math.floor(Math.random() * data_size/5)}-3-Bob Smith`);
+
+    if(stack2.length > 0) await Promise.all(stack2);
+    stack2 = [];
+
+    for(let ii=0; ii < 5; ii++, i++)
+      stack2[stack2.length]
+        = rs.delete(collection,`${Math.floor(Math.random() * data_size/5)}-3-Bob Smith`);
+    if(stack1.length > 0) await Promise.all(stack1);
+    stack1 = [];
+  }
+
+  end = Date.now();
+  benchmark[test_name] = 100 / ((end-start)/1000) + " /sec";
+    console.table(benchmark[test_name]);
+  console.timeEnd('Process time');
+
+/*===========================================================================*/
+
+
+  console.table(benchmark);
   if(data_delete && false){
     console.time('Mass delete:');
     console.log("Deleting test data if any");
@@ -160,64 +325,7 @@ const record = [
 
 
 /*
-if(true){
-  echo "Exact key search 1 hit: ";
 
-  $id = 1;
-  $ts = microtime(true);
-
-  for($c = 0; $c<10000; $c++){
-    $result = $rs->get($collection, intval(substr(rand(),-5))  . "6-Adam Smith");
-    if(!empty($result['error']) || $result['count'] != 1){
-      echo "Failed: ";
-      print_r($result);
-      exit;
-    }
-  }
-
-  $c--;
-  echo $c / (microtime(true) - $ts) ."/sec.\n";
-}
-
-
-if(true){
-  echo "Exact key search not found: ";
-
-  $id = 1;
-  $ts = microtime(true);
-
-  for($c = 0; $c<10000; $c++){
-    $result = $rs->get($collection, intval(substr(rand(),-5))  . "6-Adrian Smith");
-    if(!empty($result['error']) || $result['count'] != 0){
-      echo "Failed: ";
-      print_r($result);
-      exit;
-    }
-  }
-
-  $c--;
-  echo $c / (microtime(true) - $ts) ."/sec.\n";
-}
-
-
-if(true){
-  echo "Wildcard key search 2 hits: ";
-
-  $id = 1;
-  $ts = microtime(true);
-
-  for($c = 0; $c<5; $c++){
-    $result = $rs->get($collection, intval(substr(rand(),-5))  . "?-Adam Smith");
-    if(!empty($result['error']) || $result['count'] == 0){
-      echo "Failed: ";
-      print_r($result);
-      exit;
-    }
-  }
-
-  $c--;
-  echo $c / (microtime(true) - $ts) ."/sec.\n";
-}
 
 if($delete){
   echo "Wildcard key delete 2 hits: ";

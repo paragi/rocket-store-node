@@ -245,8 +245,7 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
 
       if( (flags & rocketstore._DELETE) ) {
         promises[promises.length] = fs.remove(file_name);
-        if( ( collection.length > 0 && key_cash[collection] ) || key_cash[key] )
-          un_cash[un_cash.length] = i;
+        un_cash[un_cash.length] = i;
         count++;
 
       } else if( collection  == "*" ) {
@@ -283,16 +282,16 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
 
   }else
     count = list.length;
-
-  if( un_cash.length > 0 && key_cash[collection] && list.length > 0 )
+//console.log("list",list);
+  if( un_cash.length > 0 && key_cash[collection] && list.length > 0 && false)
     for( let i in un_cash )
-      if( list[un_cash[i]] = key_cash[collection][un_cash[i]] )
+      if( list[un_cash[i]] == key_cash[collection][un_cash[i]] )
         key_cash[collection].splice(un_cash[i],1);
       else
         key_cash[collection].splice(key_cash[collection].indexOf(list[un_cash[i]]),1);
 
   let result = { count: count };
-  if( list.length > 0 && key.length > 0 && !(flags & rocketstore._DELETE) )
+  if( list.length > 0 )
     result.key = list;
   if ( key.length > 0 && record.length > 0 )
     result.record = record;
