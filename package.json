@@ -37,10 +37,9 @@
   },
   "homepage": "https://github.com/paragi/rocket-store-node#readme",
   "dependencies": {
-    "fast-glob": "^2.2.3",
+    "all": "0.0.0",
     "fs-extra": "^7.0.0",
     "glob-to-regexp": "^0.4.0",
-    "proper-lockfile": "^3.0.2",
     "sanitize-filename": "^1.6.1"
   }
 }

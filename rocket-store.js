@@ -195,7 +195,7 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
       if( !(flags & rocketstore._DELETE) )
         file_path = "";
       collection = "*"; // Used as index in cash
-      delete key_cash[collection];
+      delete key_cash["*"];
     }
   }
   if(file_path.length) file_path += path.sep;
