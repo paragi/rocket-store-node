@@ -11,7 +11,7 @@
 
   Some results:
 
-  PHP: System: i7 3rd gen on SSD
+  PHP on i7 3rd gen on SSD
   ┌───────────────────────────────────┬─────────────┐
   │ Mass insert                       │ 31601 /sec  │
   ├───────────────────────────────────┼─────────────┤
@@ -29,7 +29,7 @@
   └───────────────────────────────────┴─────────────┘
 
 
-  Node: System: i7 3rd gen on SSD
+  Nodeon i7 3rd gen on SSD
   ┌───────────────────────────────────┬─────────────┐
   │ Mass insert                       │ 69434 /sec  │
   ├───────────────────────────────────┼─────────────┤
@@ -46,6 +46,22 @@
   │ Exact random delete               │ 325.7 /sec  │
   └───────────────────────────────────┴─────────────┘
 
+  Node on Raspbarry Pi Zero
+  ┌───────────────────────────────────┬─────────────┐
+  │ Mass insert                       │ 561 /sec    │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact random key search           │ 96 /sec     │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact ramdom key search no hit    │ 147 /sec    │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom key search 2 hits │ 0.27 /sec   │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom key search no hit │ 0.27 /sec   │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom delete 2 hits     │ 0.29 /sec   │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact random delete               │ 10.3 /sec   │
+  └───────────────────────────────────┴─────────────┘
 
 \*============================================================================*/
 const rs = require('./rocket-store.js');
@@ -157,7 +173,7 @@ const record = [
   }
 
   end = Date.now();
-  benchmark[test_name] =  data_size / ((end-start)/1000) + " /sec";
+  benchmark[test_name] =  (data_size/10) / ((end-start)/1000) + " /sec";
     console.table(benchmark[test_name]);
   console.timeEnd('Process time');
 
@@ -186,7 +202,7 @@ const record = [
   }
 
   end = Date.now();
-  benchmark[test_name] =  data_size / ((end-start)/1000) + " /sec";
+  benchmark[test_name] =  (data_size/10) / ((end-start)/1000) + " /sec";
     console.table(benchmark[test_name]);
   console.timeEnd('Process time');
 
