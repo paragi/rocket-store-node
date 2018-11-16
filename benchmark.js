@@ -69,7 +69,7 @@ const fs = require('fs-extra');
 
 const data_create = true;
 const data_delete = false;
-var data_size   = 1000000;
+var data_size   = 1000;
 
 
 const record = [
@@ -104,13 +104,47 @@ const record = [
   },
 ];
 
+const benchmark = [];
+var start;
+
+console.log("rund?", 1000 / ((51023)/1000));
+
+function sampleStart(title){
+  console.log(title);
+  start = Date.now();
+  console.time('Process time');
+}
+
+function sampleStop(title, count){
+  end = Date.now();
+  console.timeEnd('Process time');
+  if(!count) count=1;
+  let sample_time = 1.0 * count / ((end-start)/1000);
+  if( sample_time < 100 )
+    benchmark[title] = `${Math.round(sample_time *100) / 100} /sec`;
+  else
+    benchmark[title] = `${Math.round(sample_time)} /sec`;
+
+  if(typeof console.table !== 'undefined'){
+    let out = {};
+    out[title] = benchmark[title]
+    console.table(out);
+  } else
+    console.log(benchmark[title]);
+}
+
+function sampleEnd(){
+  if(typeof console.table !== 'undefined')
+    console.table(benchmark);
+  else
+    console.log(benchmark);
+}
 
 (async () => {try{
   var start, end;
   var stack1 = [];
   var stack2 = [];
   const collection = "person";
-  benchmark = [];
 
   console.log("Collection dir:", rs.data_storage_area + collection);
   console.log("Bench mark test", "System: i7 3rd gen on SSD");
@@ -120,14 +154,10 @@ const record = [
   if(data_create){
     test_name = "Mass insert";
 
-    console.time('Process time');
-    console.log("Deleting test data if any");
     await fs.remove(rs.data_storage_area);
-    console.timeEnd('Process time');
 
-    console.log("Creating 1.000.000 test files. Please wait");
-    console.time('Process time');
-    start = Date.now();
+    sampleStart(test_name);
+    console.log(`Creating ${data_size} test files. Please wait`);
 
     for( let i = 0; i < data_size/10; i++ ){
       for(let ii=0; ii < 20; ii++, i++)
@@ -142,198 +172,145 @@ const record = [
         stack1 = [];
     }
 
-  end = Date.now();
-  benchmark[test_name] =  data_size / ((end-start)/1000) + " /sec";
-    console.table(benchmark[test_name]);
-  console.timeEnd('Process time');
+    sampleStop(test_name, data_size);
   }
 
 /*===========================================================================*/
 
-  test_name = "Exact random key search";
-  console.log(test_name);
-  console.time('Process time');
-  start = Date.now();
+  test_name = "Exact key search";
+  sampleStart(test_name);
 
   for( let i = 0; i < data_size/10 ; i++ ){
     for(let ii=0; ii < 20; ii++, i++)
-      for( let r in record )
-        stack1[stack1.length]
-          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-1-Adam Smith`);
-
+      stack1[stack1.length]
+          = rs.get(collection,`${i}-1-Adam Smith`);
       if(stack2.length > 0) await Promise.all(stack2);
       stack2 = [];
-
     for(let ii=0; ii < 20; ii++, i++)
-      for( let r in record )
-        stack2[stack2.length]
-          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-1-Adam Smith`);
-    if(stack1.length > 0) await Promise.all(stack1);
+      stack1[stack1.length]
+          = rs.get(collection,`${i}-1-Adam Smith`);
+    if(stack1.length > 0) console.log(await Promise.all(stack1));
     stack1 = [];
   }
-
-  end = Date.now();
-  benchmark[test_name] =  (data_size/10) / ((end-start)/1000) + " /sec";
-    console.table(benchmark[test_name]);
-  console.timeEnd('Process time');
+  sampleStop(test_name,data_size);
 
 /*===========================================================================*/
 
   test_name = "Exact ramdom key search no hit";
-  console.log(test_name);
-  console.time('Process time');
-  start = Date.now();
+  sampleStart(test_name);
 
   for( let i = 0; i < data_size/10 ; i++ ){
     for(let ii=0; ii < 20; ii++, i++)
-      for( let r in record )
-        stack1[stack1.length]
-          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-1-XAdam Smith`);
-
+      stack1[stack1.length]
+          = rs.get(collection,`${i}-1-Adam SmithX`);
       if(stack2.length > 0) await Promise.all(stack2);
       stack2 = [];
-
     for(let ii=0; ii < 20; ii++, i++)
-      for( let r in record )
-        stack2[stack2.length]
-          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-1-XAdam Smith`);
+      stack1[stack1.length]
+          = rs.get(collection,`${i}-1-Adam SmithX`);
     if(stack1.length > 0) await Promise.all(stack1);
     stack1 = [];
   }
-
-  end = Date.now();
-  benchmark[test_name] =  (data_size/10) / ((end-start)/1000) + " /sec";
-    console.table(benchmark[test_name]);
-  console.timeEnd('Process time');
+  sampleStop(test_name,data_size/10);
 
 /*===========================================================================*/
 
+  // Fill cash
+  await rs.get(collection,`2-?-*Canoly`);
+
   test_name = "Wildcard ramdom key search 2 hits";
-
-  // Fill cash
-  await rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
-
-  console.log(test_name);
-  console.time('Process time');
-  start = Date.now();
-
-  // Fill cash
-  await rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+  sampleStart(test_name);
 
   for( let i = 0; i < 40 ; i++ ){
     for(let ii=0; ii < 20; ii++, i++)
         stack1[stack1.length]
-          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
-
+          = rs.get(collection,`${Math.floor(Math.random() * data_size)}-?-*Canoly`);
       if(stack2.length > 0) await Promise.all(stack2);
       stack2 = [];
 
     for(let ii=0; ii < 20; ii++, i++)
         stack2[stack2.length]
-          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+          = rs.get(collection,`${Math.floor(Math.random() * data_size)}-?-*Canoly`);
     if(stack1.length > 0) await Promise.all(stack1);
     stack1 = [];
   }
 
-  end = Date.now();
-  benchmark[test_name] =  41 / ((end-start)/1000) + " /sec";
-    console.table(benchmark[test_name]);
-  console.timeEnd('Process time');
+  sampleStop(test_name,41);
 
 /*===========================================================================*/
 
   test_name = "Wildcard ramdom key search no hit";
-
-  console.log(test_name);
-  console.time('Process time');
-  start = Date.now();
+  sampleStart(test_name);
 
   for( let i = 0; i < 40 ; i++ ){
     for(let ii=0; ii < 20; ii++, i++)
         stack1[stack1.length]
-          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Spanoly`);
+          = rs.get(collection,`${Math.floor(Math.random() * data_size)}-?-*Spanoly`);
 
       if(stack2.length > 0) await Promise.all(stack2);
       stack2 = [];
 
     for(let ii=0; ii < 20; ii++, i++)
         stack2[stack2.length]
-          = rs.get(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Spanoly`);
+          = rs.get(collection,`${Math.floor(Math.random() * data_size)}-?-*Spanoly`);
     if(stack1.length > 0) await Promise.all(stack1);
     stack1 = [];
   }
-
-  end = Date.now();
-  benchmark[test_name] =  40 / ((end-start)/1000) + " /sec";
-    console.table(benchmark[test_name]);
-  console.timeEnd('Process time');
+  sampleStop(test_name,40);
 
 /*===========================================================================*/
 
   test_name = "Wildcard ramdom delete 2 hits";
+  sampleStart(test_name);
 
-  console.log(test_name);
-  console.time('Process time');
-  start = Date.now();
-
-  for( let i = 0; i < 40 ; i++ ){
+  for( let i = 0; i < 100 ; i++ ){
     for(let ii=0; ii < 20; ii++, i++)
       stack1[stack1.length]
-        = rs.delete(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+        = rs.delete(collection,`${Math.floor(Math.random() * data_size)}-?-*Canoly`);
 
     if(stack2.length > 0) await Promise.all(stack2);
     stack2 = [];
 
     for(let ii=0; ii < 20; ii++, i++)
       stack2[stack2.length]
-        = rs.delete(collection,`${Math.floor(Math.random() * data_size/5)}-?-*Canoly`);
+        = rs.delete(collection,`${Math.floor(Math.random() * data_size)}-?-*Canoly`);
     if(stack1.length > 0) await Promise.all(stack1);
     stack1 = [];
   }
-
-  end = Date.now();
-  benchmark[test_name] =  40 / ((end-start)/1000) + " /sec";
-    console.table(benchmark[test_name]);
-  console.timeEnd('Process time');
+  sampleStop(test_name,100);
 
 /*===========================================================================*/
 
   test_name = "Exact random delete";
-
-  console.log(test_name);
-  console.time('Process time');
-  start = Date.now();
+  sampleStart(test_name);
 
   for( let i = 0; i < 100 ; i++ ){
     for(let ii=0; ii < 5; ii++, i++)
       stack1[stack1.length]
-        = rs.delete(collection,`${Math.floor(Math.random() * data_size/5)}-3-Bob Smith`);
+        = rs.delete(collection,`${Math.floor(Math.random() * data_size)}-3-Bob Smith`);
 
     if(stack2.length > 0) await Promise.all(stack2);
     stack2 = [];
 
     for(let ii=0; ii < 5; ii++, i++)
       stack2[stack2.length]
-        = rs.delete(collection,`${Math.floor(Math.random() * data_size/5)}-3-Bob Smith`);
+        = rs.delete(collection,`${Math.floor(Math.random() * data_size)}-3-Bob Smith`);
     if(stack1.length > 0) await Promise.all(stack1);
     stack1 = [];
   }
-
-  end = Date.now();
-  benchmark[test_name] = 100 / ((end-start)/1000) + " /sec";
-    console.table(benchmark[test_name]);
-  console.timeEnd('Process time');
+  sampleStop(test_name,100);
 
 /*===========================================================================*/
 
+  sampleEnd();
 
-  console.table(benchmark);
   if(data_delete && false){
     console.time('Mass delete:');
     console.log("Deleting test data if any");
     await fs.remove(rs.data_storage_area);
     console.timeEnd('Mass delete:');
   }
+
 
 }catch(err){
   console.error("some err:",err);

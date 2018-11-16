@@ -79,7 +79,7 @@ rocketstore.lock_file_path      = rocketstore.data_storage_area + path.sep + 'lo
 rocketstore.lock_retry_interval = 13 // ms
 
 // Cashing object. (Might become very large)
-const key_cash ={};
+var key_cash ={};
 
 /*===========================================================================*\
   Post a data record (Insert or overwrite)
@@ -162,7 +162,7 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
     if( collection.length < 1 ) {
       if( flags & rocketstore._DELETE ) { // Delete database
         await fs.remove(rocketstore.data_storage_area);
-        key_cash = null;
+        key_cash = [];
         return { count: 1 };
       }
       key = "*"; // Search collections
@@ -282,8 +282,8 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
 
   }else
     count = list.length;
-//console.log("list",list);
-  if( un_cash.length > 0 && key_cash[collection] && list.length > 0 && false)
+
+  if( un_cash.length > 0 && key_cash[collection] && list.length > 0)
     for( let i in un_cash )
       if( list[un_cash[i]] == key_cash[collection][un_cash[i]] )
         key_cash[collection].splice(un_cash[i],1);
@@ -392,7 +392,7 @@ const do_lock = (name, resolve, reject) => {
 /*===========================================================================*\
   Set options
 \*===========================================================================*/
-rocketstore.setOptions = async (set_option) => {
+rocketstore.options = async (set_option) => {
     // Format
     if( typeof set_option.data_format !== "undefined" )
         if( typeof set_option.data_format === "number" ){
@@ -424,6 +424,30 @@ rocketstore.setOptions = async (set_option) => {
     // lock timing
     if( typeof set_option.lock_retry_interval  === "number" )
       lock.retry_interval = set_option.lock_retry_interval;
+
+  return;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 /*===========================================================================*\
