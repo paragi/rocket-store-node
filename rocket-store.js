@@ -45,7 +45,7 @@ const process = require('process');
 \*===========================================================================*/
 const rocketstore = async (set_option) => {
     if( typeof(set_option) !== "undefined")
-        await rocketstore.setOptions(set_option);
+        await rocketstore.options(set_option);
     return rocketstore;
 };
 
@@ -75,7 +75,6 @@ rocketstore._FORMAT_PHP   = 0x08; // Not implemened
 // ! brug fs.mkdtemp
 rocketstore.data_format         = rocketstore._FORMAT_JSON;
 rocketstore.data_storage_area   = path.normalize(os.tmpdir() + "/rsdb");
-rocketstore.lock_file_path      = rocketstore.data_storage_area + path.sep + 'lockfile';
 rocketstore.lock_retry_interval = 13 // ms
 
 // Cashing object. (Might become very large)
@@ -329,7 +328,7 @@ rocketstore.sequence = async (seq_name) => {
     });
   } catch(err) {
     if(err.code == 'ENOENT') {
-      await fs.ensureDir(rocketstore.lock_file_path);
+      await fs.ensureDir(rocketstore.data_storage_area + path.sep + 'lockfile');
       await fs.ensureFile(file_name);
       await new Promise((resolve, reject) => {
         do_lock(name, resolve, reject);
@@ -364,7 +363,7 @@ rocketstore.sequence = async (seq_name) => {
   await fs.writeFile(file_name, "" + sequence + " ");
 
   // Unlock
-  fs.unlink(rocketstore.lock_file_path + path.sep + name, (err) => {
+  fs.unlink(rocketstore.data_storage_area + path.sep + 'lockfile' + path.sep + name, (err) => {
     if (err) console.error(err);
   });
 
@@ -375,7 +374,7 @@ rocketstore.sequence = async (seq_name) => {
 const do_lock = (name, resolve, reject) => {
   fs.symlink(
     rocketstore.data_storage_area + path.sep + name,
-    rocketstore.lock_file_path + path.sep + name,
+    rocketstore.data_storage_area + path.sep + 'lockfile' + path.sep + name,
     (err) => {
       if(err)
         if(err.code == 'EEXIST')
@@ -395,16 +394,16 @@ const do_lock = (name, resolve, reject) => {
 rocketstore.options = async (set_option) => {
     // Format
     if( typeof set_option.data_format !== "undefined" )
-        if( typeof set_option.data_format === "number" ){
-            if( set_option.data_format & (
-                  rocketstore._FORMAT_JSON
-                | rocketstore._FORMAT_XML
-                | rocketstore._FORMAT_NATIVE)
-            )
-                rocketstore.data_format = set_option.data_format;
+      if( typeof set_option.data_format === "number" ){
+        if( set_option.data_format & (
+            rocketstore._FORMAT_JSON
+          | rocketstore._FORMAT_XML
+          | rocketstore._FORMAT_NATIVE)
+        )
+          rocketstore.data_format = set_option.data_format;
 
-        }else
-            throw new Error (`Unknown data format: '${set_option.data_format}'`);
+      }else
+        throw new Error (`Unknown data format: '${set_option.data_format}'`);
 
     // Set native data format
     if( rocketstore.data_format == rocketstore._FORMAT_NATIVE )
@@ -412,11 +411,11 @@ rocketstore.options = async (set_option) => {
 
     // Data storage area
     if(    typeof set_option.data_storage_area === "string"
-        || typeof set_option.data_storage_area === "number"
-        ){
-            let dir = path.resolve(set_option.data_storage_area);
-            await fs.ensureDir(dir, {mode: 02775});
-            rocketstore.data_storage_area = dir;
+      || typeof set_option.data_storage_area === "number"
+      ) {
+        let dir = path.resolve(set_option.data_storage_area);
+        await fs.ensureDir(dir, {mode: 02775});
+        rocketstore.data_storage_area = dir;
 
     }else if ( typeof set_option.data_storage_area !== "undefined" )
         throw new Error (`Data storage area must be a directory path`);
@@ -426,27 +425,6 @@ rocketstore.options = async (set_option) => {
       lock.retry_interval = set_option.lock_retry_interval;
 
   return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

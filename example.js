@@ -5,7 +5,7 @@
 \*===========================================================================*/
 
 // Initialize
-const rs = require('./rocket-store.js');
+const rs = require('./rocket-store');
 
 
 
@@ -27,9 +27,9 @@ const rs = require('./rocket-store.js');
   );
 
   // Post 3 records
-  rs.post("cars", "BMW_740li", { owner: "Greg Onslow" }, rs._ADD_AUTO_INC);
-  rs.post("cars", "BMW_740li", { owner: "Sam Wise"    }, rs._ADD_AUTO_INC);
-  rs.post("cars", "BMW_740li", { owner: "Bill Bo"     }, rs._ADD_AUTO_INC);
+  await rs.post("cars", "BMW_740li", { owner: "Greg Onslow" }, rs._ADD_AUTO_INC);
+  await rs.post("cars", "BMW_740li", { owner: "Sam Wise"    }, rs._ADD_AUTO_INC);
+  await rs.post("cars", "BMW_740li", { owner: "Bill Bo"     }, rs._ADD_AUTO_INC);
 
   console.log("Get all records:\n",
     await rs.get("cars", "*")
@@ -53,6 +53,8 @@ const rs = require('./rocket-store.js');
       await Promise.all(promises);
     }
   }
+  if(promises.length > 0)
+    await Promise.all(promises);
 
   console.log("Get BMW's:\n",
     await rs.get("cars", "*BMW*")
@@ -71,8 +73,5 @@ const rs = require('./rocket-store.js');
     await rs.get("cars", "*")
   );
 
-  console.log(
-    await rs.delete()
-  );
-
+  await rs.delete()
 })();

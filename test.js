@@ -138,10 +138,10 @@ testcases = async () => {
     data_storage_area   : rs.data_storage_area,
   }
 
-  // setOptions
+  // options
   await tst(
     "Bad data format option",
-    rs.setOptions,
+    rs.options,
     [{data_storage_area: "./",data_format: "a"}],
     "Unknown data format: 'a'",
   );
@@ -157,14 +157,14 @@ testcases = async () => {
 
   await tst(
     "Set options to unwriteable directory",
-    rs.setOptions,
+    rs.options,
     [{data_storage_area: "/rsdb/sdgdf/",data_format: rs._FORMAT_NATIVE}],
     "EACCES: permission denied, mkdir '/rsdb'",
   );
 
   await tst(
     "Set options",
-    rs.setOptions,
+    rs.options,
     [defaults],
   );
   console.table(defaults);
