@@ -75,7 +75,4 @@ const rs = require('./rocket-store.js');
     await rs.delete()
   );
 
-  const fs =require("fs-extra");
-  console.log("await fs.remove(",rs.data_storage_area);
-  await fs.remove("./webapp");
 })();
