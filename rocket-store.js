@@ -202,8 +202,12 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
   // search
   if( scan_dir.length > 0 ) {
     if( !Array.isArray(key_cash[collection]) )
-      key_cash[collection] = await fs.readdir( scan_dir );
-
+      try{
+        key_cash[collection] = await fs.readdir( scan_dir );
+      } catch(err){
+        if(err.code != 'ENOENT')
+          throw(err);
+      }
     if( key == '*' )
       list = key_cash[collection];
 
@@ -220,7 +224,7 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
     // Order and limit by time
 
     // Order by key value
-    if( list.length > 1 && !(flags & rocketstore._DELETE) ){
+    if( list && list.length > 1 && !(flags & rocketstore._DELETE) ){
       if( (flags & (rocketstore._ORDER | rocketstore._ORDER_DESC)) ){
         list.sort();
         if( (flags & rocketstore._ORDER_DESC) ){
@@ -234,7 +238,7 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
       list = [ key ];
 
   // Get/delete records
-  if( file_path.length > 0 && list.length > 0 ) {
+  if( file_path.length > 0 && list && list.length > 0 ) {
 
     let promises = [];
     let cash_index = -1;
@@ -280,7 +284,7 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
     if ( promises.length > 0 ) await Promise.all(promises)
 
   }else
-    count = list.length;
+    count = list ? list.length : 0;
 
   if( un_cash.length > 0 && key_cash[collection] && list.length > 0)
     for( let i in un_cash )
@@ -290,7 +294,7 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
         key_cash[collection].splice(key_cash[collection].indexOf(list[un_cash[i]]),1);
 
   let result = { count: count };
-  if( list.length > 0 )
+  if( list && list.length > 0 )
     result.key = list;
   if ( key.length > 0 && record.length > 0 )
     result.record = record;

@@ -29,7 +29,7 @@
   └───────────────────────────────────┴─────────────┘
 
 
-  Nodeon i7 3rd gen on SSD
+  Node on i7 3rd gen on SSD
   ┌───────────────────────────────────┬─────────────┐
   │ Mass insert                       │ 69434 /sec  │
   ├───────────────────────────────────┼─────────────┤
@@ -46,21 +46,38 @@
   │ Exact random delete               │ 325.7 /sec  │
   └───────────────────────────────────┴─────────────┘
 
+  PHP on Raspbarry PI Zero
+  ┌───────────────────────────────────┬─────────────┐
+  │ Mass insert                       │    532 /sec │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact random key search           │    197 /sec │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact ramdom key search no hit    │   1571 /sec │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom key search 2 hits │   0.11 /sec │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom key search no hit │             │
+  ├───────────────────────────────────┼─────────────┤
+  │ Wildcard ramdom delete 2 hits     │   0.11 /sec │
+  ├───────────────────────────────────┼─────────────┤
+  │ Exact random delete               │   181 /sec  │
+  └───────────────────────────────────┴─────────────┘
+
   Node on Raspbarry Pi Zero
   ┌───────────────────────────────────┬─────────────┐
-  │ Mass insert                       │ 561 /sec    │
+  │ Mass insert                       │    561 /sec │
   ├───────────────────────────────────┼─────────────┤
-  │ Exact random key search           │ 96 /sec     │
+  │ Exact random key search           │     96 /sec │
   ├───────────────────────────────────┼─────────────┤
-  │ Exact ramdom key search no hit    │ 147 /sec    │
+  │ Exact ramdom key search no hit    │    147 /sec │
   ├───────────────────────────────────┼─────────────┤
-  │ Wildcard ramdom key search 2 hits │ 0.27 /sec   │
+  │ Wildcard ramdom key search 2 hits │   0.27 /sec │
   ├───────────────────────────────────┼─────────────┤
-  │ Wildcard ramdom key search no hit │ 0.27 /sec   │
+  │ Wildcard ramdom key search no hit │   0.27 /sec │
   ├───────────────────────────────────┼─────────────┤
-  │ Wildcard ramdom delete 2 hits     │ 0.29 /sec   │
+  │ Wildcard ramdom delete 2 hits     │   0.29 /sec │
   ├───────────────────────────────────┼─────────────┤
-  │ Exact random delete               │ 10.3 /sec   │
+  │ Exact random delete               │   10.3 /sec │
   └───────────────────────────────────┴─────────────┘
 
 \*============================================================================*/

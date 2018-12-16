@@ -27,7 +27,7 @@ result = await rs.delete("cars","*cede*");
 ## Features:
 * Extremely fast
 * Very reliant
-* Very little footprint. (except for
+* Very little footprint.
 * Very flexible.
 * few dependencies
 * Works without configuration or setup.
@@ -39,86 +39,119 @@ result = await rs.delete("cars","*cede*");
 
     npm install rocket-store
 
+## Usages
+
+  ```javascript const rs = require('rocket-store');```
+
+Rocket-store does not require initialization:
+* The storage area defaults to the OS temp dir.
+* When trying to get a non existant collection, the reply is that no records were found.
+* When posting to a non existant collection, it is created.
+
+How ever you can set the storage area and data format to use, with the setOption function, before doing any operation on the data.
+
+## Basic terminology
+Rocketstore was made to replace a more complex database, in a setting that required a low footprint and high performance.
+
+Rocketstore is intended to store and retrieve records/documents, organized in collections, using a key.
+
+Terms used:
+* __Collection__: name of a collections of records. (Like an SQL table)
+* __Record__: the data store. (Like an SQL row)
+* __Data storage area__: area/directory where collections are stored. (Like SQL data base)
+* __Key__: all records has exactly one unique key, witch is the same as a file name, with the same restrictions, and the same wildcards used in searches.
+
+Compare rocketstore, SQL and file system terms:
+
+| Rocket store | SQL| File system |
+|---|---|---
+| __storage area__     |  database     |  data directory root   |
+| __collection__       |  table        |  directory             |
+| __key__              |  key          |  file name             |
+| __record__           |  row          |  file                  |
 
 ### Post
-Stores a record, in <directory\> with in <filename\>
+Stores a record, in a collection identified by a unique key
 
 ```javascript
-post(string <directory\>, string <filename\>, array | scalar <data\> [, integer options])
+post(string <collection\>, string <key\>, mixed <record\> [, integer options])
 ```
-* Directory name to contain the collection of file records. (Directories are located in the storage area, that can be set with the options method. Defaults to <tempdir>/rsdb )
-* File name of the record
-No path separators or wildcards are allowed in directory or file names
-* Options:
-  * RS_ADD_AUTO_INC:  Add an auto incremented sequence to the beginning of the file name
+__Collection__ name to contain the records.
 
-Returns an array containing the result of the operation:
-* key:   string containing the actual file name used
-* count : number of files affected (1 on succes)
+__Key__ uniquely identifying the record
 
-If the file already exists, the record will be replaced.
+No path separators or wildcards etc. are allowed in collection names and keys.
+Illigal charakters are silently striped off.
 
-Subdirectories and full path is not supported. Path separators and other illigal charakters are silently striped off.
+__Options__
+  * _ADD_AUTO_INC:  Add an auto incremented sequence to the beginning of the key
+
+__Returns__ an associative array containing the result of the operation:
+* key:   string containing the actual key used.
+* count : number of records affected (1 on succes)
+
+If the key already exists, the record will be replaced.
+
+
 
 If the function fails for any reasion, an error is thrown.
 
 ### Get
-Find an retrieve a record, in <directory\>  with in <filename\>.
+Find an retrieve a record, in a collection.
 ```javascript
-get([string <directory\> [,string <filename with wildcards\> [integer <option flags]]]])
+get([string <collection\> [,string <filename with wildcards\> [integer <option flags]]]])
 ```
 
-* Directory name to search. If no directory name is given, get will return at list of collections (Directories) and sequences etc.
-* File name to search for. Can be mixed with wildcards '\*' and '?'. If no file name is given, it's the equvivalent of '*'
-* Options:
-  * RS_ORDER       : Results returned are ordered alphabetically acending.
-  * RS_ORDER_DESC  : Results returned are ordered alphabetically decending.
+__Collection__ to search. If no collection name is given, get will return a list of data base assets: collections and sequences etc.
 
-Return an array of
-* count   : number of files read
-* key     : array of Keys
+__Key__ to search for. Can be mixed with wildcards '\*' and '?'. An undefined or empty key is the equvivalent of '*'
+
+__Options__:
+  * _ORDER       : Results returned are ordered alphabetically acending.
+  * _ORDER_DESC  : Results returned are ordered alphabetically decending.
+
+__Return__ an array of
+* count   : number of records affected
+* key     : array of keys
 * record  : array of records
 
 NB: wildcards are very expensive on large datasets, with most filesystems.
-(on a regular PC with +10 mill records in the collection, it might take up to a second to retreive one record, where as one might retreive up to 100.000 records with an exact key match)
+(on a regular PC with +10^7 records in the collection, it might take up to a second to retreive one record, where as one might retreive up to 100.000 records with an exact key match)
 
 ### Delete
-Search for one or more files, whos name match the querry. and delete them.
+Delete one or more files, whos key match.
 
 ```javascript
-delete([string <directory> [,string <filename with wildcards>]])
+delete([string <collection\> [,string <key with wildcards>]])
 ```
-* Directory name to search. If no directory name is given, **all data are deleted!**
-* File name to search for. Can be mixed with wildcards '\*' and '?'. If no file name is given, **all files in a directory are deleted!**
+__Collection__ to search. If no collection is given, **THE WHOLE DATA BASE IS DELETED!**
+__ket__ to search for. Can be mixed with wildcards '\*' and '?'. If no key is given, **THE ENTIRE COLLECTION INCLUDING SEQUENCES IS DELETED!**
 
-Return an array of
-* count : number of files or directories affected
+__Return__ an array of
+* count : number of records or collections affected
 
-Can also be used to delete a whole collection with its sequences and the entire database.
 
 ### Configuring
-Configuration options is an array, that can be parsed during require or with the options function
+Configuration options is an associative array, that can be parsed during require or with the options function
 The array can have these options:
 
 #### Set data storage directory and file format to JSON
 ```javascript
-options = [
-  "data_storage_area" => "/home/simon/webapp",
-  "data_format"       => rs._FORMAT_JSON
-];
-await rs.options(
-  data_storage_area : "/home/simon/webapp",
+const rs = require('rocket-store');
+
+await rs.options({
+  data_storage_area : "/home/rddb/webapp",
   data_format       : rs._FORMAT_JSON,
-);
+});
 ```
 
 |index name|values|
 |---|---|
-|data_storage_area | The directory where the database resides. The default is to use the temporary directory provided by the operating system. If that doesn't work, the DOCUMENT_ROOT directory is used. |
+|data_storage_area | The directory where the database resides. The default is to use a subdirectory to the temporary directory provided by the operating system. If that doesn't work, the DOCUMENT_ROOT directory is used. |
 |data_format       | Specify which format the records are stored in. Values are: _FORMAT_NATIVE - default. and RS_FORMAT_JSON - Use JSON data format.|
 
 
-## Usage
+## Examples
 #### Storing records:
 ```javascript
 // Initialize    
@@ -246,37 +279,24 @@ rs.delete();
 ```
 ---
 
-## Terminology
-Rocketstore was made to replace a more complex database, in a setting that required a low footprint and high performance.
-
-Rocketstore is intended to store and retrieve records/documents, organized in collections, using a key.
-
-Compare rocketstore, SQL and file system terms:
-
-| Rocket store | SQL| File system |
-|---|---|---
-| storage area     |  database     |  data directory root   |
-| collection       |  table        |  directory             |
-| key              |  key          |  file name             |
-| record           |  row          |  file                  |
-
 ## File system issue
-In this node version (ver 11) a compromise is struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, that are able to filter a directory search, on a low level. Instead, an array of all entries is read.
-This consumes a lot of memory, with a large database. There is no avoiding that, short of improving the node file system library. This is beyond my intentions, at this time. I hope it will be remedied by the node core team.
-Instead in this module i have accepted the consumption of memory, but as a compromise, strife to reuse it to improve speed on key searching, by keeping the read keys in memory between searched, in a key_cash.
-key_cash has to be maintained in the post and get methods.
+In this node version (ver 11) a compromise is struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, to filter a directory search on a low level. Instead, an array of all entries is read.
+
+This consumes a lot of memory, with a large database. There is no avoiding that, short of improving opon the node file system library. This is beyond my intentions, at this time. I hope it will be remedied by the node core team.
+
+Instead in as a compromise the memory that will be used any way is applied to improve speed on key searching, by keeping the read keys in memory between searched as a key_cash.
 
 A draw back of this is that collection names are restricted to valid variable names as well as directory names.
 
 Another issue is that file locking is yet to be implementet in node.
 Therefore a time consuming locking mecahnism is implemented as symlinks.
 
-Both solutions willbe changed, as node matures.
+Both solutions will be changed, as node matures.
 
 ---
 ## Benchmarks
 
-The test is performed with 1 million records in in a single collection.
+Benchmarks are performed with 1 million records in in a single collection.
 
 |System | Mass insert | exact key search | wildcard search | no hit | delete |
 |---|---|---|---|---|---|
@@ -287,6 +307,6 @@ The test is performed with 1 million records in in a single collection.
 ---
 ## Contributions
 * Contributions of any kind are highly appreciated.
-* Don't hesitate to submit an issue on github. But please provide a reproducible example.
+* Don't hesitate to submit an issue report on github. But please provide a reproducible example.
 * Code should look good and compact, and be covered by a test case or example.
 * Please don't change the formatting style laid out, without a good reason. I know its not the most common standard, but its rather efficient one.
