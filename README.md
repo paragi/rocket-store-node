@@ -87,8 +87,9 @@ __Options__
   * _ADD_AUTO_INC:  Add an auto incremented sequence to the beginning of the key
 
 __Returns__ an associative array containing the result of the operation:
-* key:   string containing the actual key used.
 * count : number of records affected (1 on succes)
+* key:   string containing the actual key used
+
 
 If the key already exists, the record will be replaced.
 
@@ -97,7 +98,7 @@ If the key already exists, the record will be replaced.
 If the function fails for any reasion, an error is thrown.
 
 ### Get
-Find an retrieve a record, in a collection.
+Find an retrieve records, in a collection.
 ```javascript
 get([string <collection\> [,string <filename with wildcards\> [integer <option flags]]]])
 ```
@@ -113,7 +114,7 @@ __Options__:
 __Return__ an array of
 * count   : number of records affected
 * key     : array of keys
-* record  : array of records
+* result  : array of records
 
 NB: wildcards are very expensive on large datasets, with most filesystems.
 (on a regular PC with +10^7 records in the collection, it might take up to a second to retreive one record, where as one might retreive up to 100.000 records with an exact key match)
@@ -171,7 +172,7 @@ The above example will output this:
     {
       count: 1,
       key: [ 'Mercedes_Benz_GT_R' ],
-      record: [
+      result: [
         { owner: 'Lisa Simpson' }
       ]
     }
@@ -200,7 +201,7 @@ The above will output this:
        '2-BMW_740li',
        '3-BMW_740li'
       ],
-      record: [
+      result: [
         { owner: 'Greg Onslow' },
         { owner: 'Sam Wise' },
         { owner: 'Bill Bo' }
@@ -241,7 +242,7 @@ The above example might output this:
        'Gregs_BMW_740li',
        'Bills_BMW_740li',
       ],
-      record: [
+      result: [
         { owner: 'Lisa Simpson' },
         { owner: 'Greg Onslow' },
         { owner: 'Bill Bo' },

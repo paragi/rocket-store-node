@@ -297,7 +297,7 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
   if( list && list.length > 0 )
     result.key = list;
   if ( key.length > 0 && record.length > 0 )
-    result.record = record;
+    result.result = record;
 
   return result;
 }
