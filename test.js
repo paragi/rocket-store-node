@@ -204,6 +204,29 @@ testcases = async () => {
     2,
   );
 
+
+  await tst(
+    "Post a record",
+    rs.post,
+    ["person",`${record['id']}-${record['name']}`,record],
+    { count: 1 },
+  );
+
+  record.test = 27;
+  await tst(
+    "RePost a record",
+    rs.post,
+    ["person",`${record['id']}-${record['name']}`,record],
+    { count: 1 },
+  );
+
+  await tst(
+    "Count record",
+    rs.get,
+    ["person",`${record['id']}-${record['name']}`],
+    { count: 2 },
+  );
+
   await tst(
     "Post a record, where key is empty",
     rs.post,
