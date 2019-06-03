@@ -121,8 +121,11 @@ rocketstore.post = async (collection, key, record ,flags) => {
       throw new Error('Sorry, that data format is not supported');
 
   // Store key in cash
-  if( Array.isArray(key_cash[collection]) )
-    key_cash[collection][key_cash[collection].length] = key;
+  if( Array.isArray(key_cash[collection]) ){
+    let i = key_cash[collection].indexOf(key);
+    if( i < 0 )
+      key_cash[collection][key_cash[collection].length] = key;
+  }
 
   return {key: key, count: 1};
 }

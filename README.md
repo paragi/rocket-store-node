@@ -311,3 +311,12 @@ Benchmarks are performed with 1 million records in in a single collection.
 * Don't hesitate to submit an issue report on github. But please provide a reproducible example.
 * Code should look good and compact, and be covered by a test case or example.
 * Please don't change the formatting style laid out, without a good reason. I know its not the most common standard, but its rather efficient one.
+
+
+---
+## Updates
+0.9.3:
+- Cash update dublicate bug fix.
+
+0.9.2:
+- Minor fixes and rewrites
