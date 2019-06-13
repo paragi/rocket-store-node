@@ -85,6 +85,7 @@ Illigal charakters are silently striped off.
 
 __Options__
   * _ADD_AUTO_INC:  Add an auto incremented sequence to the beginning of the key
+  * _ADD_GUID: Add a Globally Unique IDentifier to the key
 
 __Returns__ an associative array containing the result of the operation:
 * count : number of records affected (1 on succes)
@@ -208,6 +209,40 @@ The above will output this:
       ]
     }
 
+#### Inserting with Globally Unique IDentifier key
+Another option is to add a GUID to the key.
+The GUID is a combination of a timestamp and a random sequence, formatet in accordance to  RFC 4122 (Valid but slightly less random)
+
+If ID's are generated more than 1 millisecond apart, they are 100% unique.
+If two ID's are generated at shorter intervals, the likelyhod of collission is up to 1 of 10^15.
+
+```javascript
+await rs.post("cars", "BMW_740li", { owner: "Greg Onslow" }, rs._ADD_GUID);
+await rs.post("cars", "BMW_740li", { owner: "Sam Wise"    }, rs._ADD_GUID);
+await rs.post("cars", "BMW_740li", { owner: "Bill Bo"     }, rs._ADD_GUID);
+
+result = await rs.get("cars", "*");
+
+console.log(result);
+
+```
+
+The above will output this:
+
+    {
+      count: 4,
+      key: [
+       '16b4ffd8-87a0-4000-839f-ea5dd495b000-BMW_740li',
+       '16b4ffd8-87b0-4000-8032-45d788fac000-BMW_740li',
+       '16b4ffd8-87b0-4000-839f-95bd498f5000-BMW_740li'
+      ],
+      result: [
+        { owner: 'Greg Onslow' },
+        { owner: 'Sam Wise' },
+        { owner: 'Bill Bo' }
+      ]
+    }
+
 
 #### Mass insterts
 ```javascript
@@ -315,6 +350,9 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Updates
+0.9.4:
+- Added Globally Unique IDentifier option to key genration. post flag: _ADD_GUID
+
 0.9.3:
 - Cash update dublicate bug fix.
 

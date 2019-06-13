@@ -63,6 +63,7 @@ rocketstore._DELETE       = 0x10;
 
 // Post options
 rocketstore._ADD_AUTO_INC = 0x40;
+rocketstore._ADD_GUID     = 0x80;
 
 // Data storage format options
 rocketstore._FORMAT_JSON  = 0x01;
@@ -105,6 +106,15 @@ rocketstore.post = async (collection, key, record ,flags) => {
   if(key.length < 1 || (flags & rocketstore._ADD_AUTO_INC)){
       const sequence = await rocketstore.sequence(collection);
       key = key.length > 0 ? `${sequence}-${key}` : `${sequence}`;
+  }
+
+  // Insert a Globally Unique IDentifier
+  if(flags & rocketstore._ADD_GUID){
+    const uid = (new Date()).getTime().toString(16) +
+    Math.random().toString(16).substring(2) + "0".repeat(16);
+    const guid = uid.substr(0,8) + '-' + uid.substr(8,4) + '-4000-8' +
+    uid.substr(12,3) + '-' + uid.substr(15,12);
+    key = key.length > 0 ? `${guid}-${key}` : `${guid}`;
   }
 
   // Write to file

@@ -224,7 +224,7 @@ testcases = async () => {
     "Count record",
     rs.get,
     ["person",`${record['id']}-${record['name']}`],
-    { count: 2 },
+    { count: 1 },
   );
 
   await tst(
@@ -261,6 +261,21 @@ testcases = async () => {
     ["\x00./.\x00","bad",record],
     'Collection name contains illegal characters (For a javascript identifier)',
   );
+
+  await tst(
+    "Post with GUID added to key",
+    rs.post,
+    ["person","key-value",record,rs._ADD_GUID],
+    { count: 1 },
+  );
+
+  await tst(
+    "Post with GUID key only",
+    rs.post,
+    ["person","",record,rs._ADD_GUID],
+    { count: 1 },
+  );
+
 
   // Get
   await tst(
@@ -318,14 +333,14 @@ testcases = async () => {
     "Get a list",
     rs.get,
     ["person","*"],
-    { count: 5 },
+    { count: 7 },
   );
 
   await tst(
     "Get a list",
     rs.get,
     ["person"],
-    { count: 5 },
+    { count: 7 },
   );
 
   await tst(
