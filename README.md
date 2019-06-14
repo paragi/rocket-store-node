@@ -33,6 +33,7 @@ result = await rs.delete("cars","*cede*");
 * Works without configuration or setup.
 * Data stored in JSON format
 * Configurable
+* Also available for PHP
 
 
 ## Installation
