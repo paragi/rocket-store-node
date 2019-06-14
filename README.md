@@ -128,7 +128,8 @@ Delete one or more files, whos key match.
 delete([string <collection\> [,string <key with wildcards>]])
 ```
 __Collection__ to search. If no collection is given, **THE WHOLE DATA BASE IS DELETED!**
-__ket__ to search for. Can be mixed with wildcards '\*' and '?'. If no key is given, **THE ENTIRE COLLECTION INCLUDING SEQUENCES IS DELETED!**
+
+__Key__ to search for. Can be mixed with wildcards '\*' and '?'. If no key is given, **THE ENTIRE COLLECTION INCLUDING SEQUENCES IS DELETED!**
 
 __Return__ an array of
 * count : number of records or collections affected
