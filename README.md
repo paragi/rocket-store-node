@@ -9,14 +9,7 @@ Rocket-store is also available for PHP.
 
 ## Simple to use:
 ```javascript
-result = await rs.post(
-  "cars",
-  "Mercedes",
-  {
-    owner: "Lisa Simpson",
-    registration: "N3RD"
-  }
-);
+result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg: "N3RD"});
 
 result = await rs.get("cars","*",rs._ORDER_DESC);
 
@@ -33,6 +26,7 @@ result = await rs.delete("cars","*cede*");
 * Works without configuration or setup.
 * Data stored in JSON format
 * Configurable
+* Also available for PHP
 
 
 ## Installation
@@ -111,6 +105,8 @@ __Key__ to search for. Can be mixed with wildcards '\*' and '?'. An undefined or
 __Options__:
   * _ORDER       : Results returned are ordered alphabetically acending.
   * _ORDER_DESC  : Results returned are ordered alphabetically decending.
+  * _KEYS        : Return only keys without records
+  * _COUNT       : Return only record count
 
 __Return__ an array of
 * count   : number of records affected
@@ -127,7 +123,8 @@ Delete one or more files, whos key match.
 delete([string <collection\> [,string <key with wildcards>]])
 ```
 __Collection__ to search. If no collection is given, **THE WHOLE DATA BASE IS DELETED!**
-__ket__ to search for. Can be mixed with wildcards '\*' and '?'. If no key is given, **THE ENTIRE COLLECTION INCLUDING SEQUENCES IS DELETED!**
+
+__Key__ to search for. Can be mixed with wildcards '\*' and '?'. If no key is given, **THE ENTIRE COLLECTION INCLUDING SEQUENCES IS DELETED!**
 
 __Return__ an array of
 * count : number of records or collections affected
@@ -350,6 +347,10 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Updates
+0.10.1
+- Refactoring of get methods
+- Added get flags _COUNT and _KEYS
+
 0.9.4:
 - Added Globally Unique IDentifier option to key genration. post flag: _ADD_GUID
 

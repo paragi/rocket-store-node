@@ -25,8 +25,8 @@
   File system issue
   In this node version, a compromise is struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, that are able to filter a directory search, on a low level. Instead, an array of all entries is read.
   This consumes a lot of memory, with a large database. There is no avoiding that, short of improving the node file system library. This is beyond my intentions, at this time. I hope it will be remedied by the node core team.
-  Instead in this module i have accepted the consumption of memory, but as a compromise, strife to reuse it to improve speed on key searching, by keeping the read keys in memory between searched, in a key_cash.
-  key_cash has to be maintained in the post and get methods.
+  Instead in this module i have accepted the consumption of memory, but as a compromise, strife to reuse it to improve speed on key searching, by keeping the read keys in memory between searched, in a keyCache.
+  keyCache has to be maintained in the post and get methods.
 
   A draw back of this is that collection names are restricted to valid variable names as well as directory names.
 
@@ -60,10 +60,12 @@ rocketstore._ORDER_DESC   = 0x02;
 rocketstore._ORDERBY_TIME = 0x04;
 rocketstore._LOCK         = 0x08;
 rocketstore._DELETE       = 0x10;
+rocketstore._KEYS         = 0x20;
+rocketstore._COUNT        = 0x40;
 
 // Post options
-rocketstore._ADD_AUTO_INC = 0x40;
-rocketstore._ADD_GUID     = 0x80;
+rocketstore._ADD_AUTO_INC = 0x01;
+rocketstore._ADD_GUID     = 0x02;
 
 // Data storage format options
 rocketstore._FORMAT_JSON  = 0x01;
@@ -79,12 +81,12 @@ rocketstore.data_storage_area   = path.normalize(os.tmpdir() + "/rsdb");
 rocketstore.lock_retry_interval = 13 // ms
 
 // Cashing object. (Might become very large)
-var key_cash ={};
+var keyCache ={};
 
 /*===========================================================================*\
   Post a data record (Insert or overwrite)
 
-  If key_cash exists for the given collection, entries is added.
+  If keyCache exists for the given collection, entries is added.
 \*===========================================================================*/
 rocketstore.post = async (collection, key, record ,flags) => {
 
@@ -118,7 +120,7 @@ rocketstore.post = async (collection, key, record ,flags) => {
   }
 
   // Write to file
-  let file_name =
+  let fileName =
       rocketstore.data_storage_area
     + path.sep
     + collection
@@ -126,16 +128,15 @@ rocketstore.post = async (collection, key, record ,flags) => {
     + key;
 
   if(rocketstore.data_format & rocketstore._FORMAT_JSON)
-      await fs.outputJson(file_name, record);
+      await fs.outputJson(fileName, record);
   else
       throw new Error('Sorry, that data format is not supported');
 
   // Store key in cash
-  if( Array.isArray(key_cash[collection]) ){
-    let i = key_cash[collection].indexOf(key);
-    if( i < 0 )
-      key_cash[collection][key_cash[collection].length] = key;
-  }
+  if( Array.isArray(keyCache[collection])
+    && keyCache[collection].indexOf(key) < 0 )
+      keyCache[collection][keyCache[collection].length] = key;
+
 
   return {key: key, count: 1};
 }
@@ -149,141 +150,120 @@ rocketstore.post = async (collection, key, record ,flags) => {
     get collections => no collection + key wildcard => read (no cashing), filter to list.
 
   Cashing:
-  Whenever readdir is called, keys are stores in key_cash, pr. collection.
-  The key_cash is maintained whenever a record is deleted or added.
+  Whenever readdir is called, keys are stores in keyCache, pr. collection.
+  The keyCache is maintained whenever a record is deleted or added.
   Except for searches in the root (list of collections etc.) wish must be read each time.
+
+  NB: Files may have been removed manually and should be removed from the cache
 
 
 \*===========================================================================*/
 rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
 
-  let list = [];
-  let scan_dir = "";
-  let file_path = rocketstore.data_storage_area;
-  let count = 0;
-  let un_cash = [];
+  let keys = [];
+  let unCache = [];
   let record = [];
+  let promises = [];
+  let count = 0;
 
+  // Check collection name
   collection = "" + ( collection || "");
   if( collection.length > 0 && !identifierNameTest(collection) )
     throw new Error('Collection name contains illegal characters (For a javascript identifier)');
 
+  // Check key validity
   key = fileNameWash("" + ( key || "" )).replace(/[*]{2,}/g, '*'); // remove globstars **
 
-  if( key.length < 1 ) {
-    if( collection.length < 1 ) {
-      if( flags & rocketstore._DELETE ) { // Delete database
-        await fs.remove(rocketstore.data_storage_area);
-        key_cash = [];
-        return { count: 1 };
-      }
-      key = "*"; // Search collections
-      scan_dir = file_path;
-      file_path = "";
-      collection = "*"; // Used as index in cash
-      key_cash[collection] == null; // Don't cash list of collections
+  // Prepare search
+  let scanDir = rocketstore.data_storage_area + path.sep
+    + ( collection ? collection + path.sep : '' );
+  let wildcard = key.indexOf('*') > -1 || key.indexOf('?') > -1 || !key.length;
 
-    } else {
-      if( flags & rocketstore._DELETE ) { // Delete collection
-        await fs.remove(rocketstore.data_storage_area + path.sep + collection );
-        await fs.remove(rocketstore.data_storage_area + path.sep + collection + '_seq' );
-        delete key_cash[collection];
-        return { count: 1 }
-      } else{
-        file_path += path.sep + collection;
-        key = "*";
-        scan_dir = file_path;
-      }
-    }
+  if( wildcard && !( (flags & rocketstore._DELETE) && !key ) ) {
+    let list = [];
 
-  } else {
-    if( collection.length > 0 )
-      file_path += path.sep + collection;
-
-    if( key.indexOf('*') > -1 || key.indexOf('?') > -1 )
-      scan_dir = file_path;
-
-    if( collection.length < 1 ) {
-      if( !(flags & rocketstore._DELETE) )
-        file_path = "";
-      collection = "*"; // Used as index in cash
-      delete key_cash["*"];
-    }
-  }
-  if(file_path.length) file_path += path.sep;
-
-  // search
-  if( scan_dir.length > 0 ) {
-    if( !Array.isArray(key_cash[collection]) )
+    // Read directory into cache
+    if( !collection || !Array.isArray(keyCache[collection]) ) {
       try{
-        key_cash[collection] = await fs.readdir( scan_dir );
+        list = await fs.readdir( scanDir );
+        // Update cache
+        if ( collection && list.length )
+          keyCache[collection] = list;
+
       } catch(err){
         if(err.code != 'ENOENT')
           throw(err);
       }
-    if( key == '*' )
-      list = key_cash[collection];
+    }
 
-    else {
+    if( collection && Array.isArray(keyCache[collection]) ) {
+      list = keyCache[collection];
+    }
+
+    // Wildcard search
+    if( key && key != '*' ) {
       let regex = globToRegExp(key);  // ? are not dealt with. replace \? => ?
       regex = new RegExp(String(regex).slice(1, -1).replace(/\\\?/g, '.?'));
 
-      for( let i in key_cash[collection])
-        if( regex.test(key_cash[collection][i]) ){
-          list[list.length] = key_cash[collection][i] // 10 x faster than push
-        }
+      let haystack = collection ? keyCache[collection] : list;
+      for( let i in haystack)
+        if( regex.test(haystack[i]) )
+          keys[keys.length] = haystack[i] // 10 x faster than push
+
+    } else {
+      keys = list;
+    }
+
+    // Order by key value
+    if( (flags & (rocketstore._ORDER | rocketstore._ORDER_DESC))
+      && keys && keys.length > 1
+      && !(flags & ( rocketstore._DELETE | flags & rocketstore._COUNT ) )
+      ){
+
+      keys.sort();
+      if( (flags & rocketstore._ORDER_DESC) )
+        keys.reverse();
     }
 
     // Order and limit by time
 
-    // Order by key value
-    if( list && list.length > 1 && !(flags & rocketstore._DELETE) ){
-      if( (flags & (rocketstore._ORDER | rocketstore._ORDER_DESC)) ){
-        list.sort();
-        if( (flags & rocketstore._ORDER_DESC) ){
-          list.reverse();
-        }
-      }
-    }
-  } else
-    if(   !Array.isArray(key_cash[collection])
-        || key_cash[collection].indexOf(key) > -1 )
-      list = [ key ];
+  // Exact key
+  } else {
+    if( collection
+        && Array.isArray(keyCache[collection])
+        && keyCache[collection].indexOf(key) < 0
+      )
+      keys = [];
+    else if( key )
+      keys = [ key ];
+  }
 
-  // Get/delete records
-  if( file_path.length > 0 && list && list.length > 0 ) {
+  count = keys.length;
 
-    let promises = [];
-    let cash_index = -1;
-
-    for(let i in list){
-      let file_name = file_path + list[i];
-
-      if( (flags & rocketstore._DELETE) ) {
-        promises[promises.length] = fs.remove(file_name);
-        un_cash[un_cash.length] = i;
-        count++;
-
-      } else if( collection  == "*" ) {
-        count++;
-        record[i] = "";
-
-      }else if(rocketstore.data_format & rocketstore._FORMAT_JSON) {
-        //if( flags & rocketstore._LOCK ) await lockfile.lock(file_name);
-
+  // Read specific records
+  if( keys.length && collection
+      && !(flags & (
+        rocketstore._KEYS | rocketstore._COUNT | rocketstore._DELETE)
+      )
+    ) {
+    for(let i in keys){
+      let fileName = scanDir + keys[i];
+      // Read JSON record file
+      if(rocketstore.data_format & rocketstore._FORMAT_JSON) {
+        //if( flags & rocketstore._LOCK ) await lockfile.lock(fileName);
         promises[promises.length] = new Promise((resolve, reject) => {
-          fs.readFile(file_name,'utf8', ( (i) => {
+          fs.readFile(fileName,'utf8', ( (i) => {
             return ( err, data ) => {
               if( err ) {
                 if( err.code != 'ENOENT')
                   reject(err);
                 else {
-                  un_cash[un_cash.length] = i;
-                  list.splice(i,1);
+                  unCache[unCache.length] = keys[i];
+                  record[i] = '*deleted*';
+                  count--;
                   resolve();
                 }
               } else {
-                count++;
                 record[i] = JSON.parse(data);
                 resolve();
               }
@@ -294,22 +274,67 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
       }else
         throw new Error('Sorry, that data format is not supported');
     }
-    if ( promises.length > 0 ) await Promise.all(promises)
 
-  }else
-    count = list ? list.length : 0;
+  // Delete
+  } else if( flags & rocketstore._DELETE) {
 
-  if( un_cash.length > 0 && key_cash[collection] && list.length > 0)
-    for( let i in un_cash )
-      if( list[un_cash[i]] == key_cash[collection][un_cash[i]] )
-        key_cash[collection].splice(un_cash[i],1);
-      else
-        key_cash[collection].splice(key_cash[collection].indexOf(list[un_cash[i]]),1);
+    // Delete database
+    if( !collection && !key ){
+      if( await fs.pathExists(rocketstore.data_storage_area) ) {
+        promises[promises.length] = fs.remove(rocketstore.data_storage_area);
+        keyCache = {};
+        count = 1;
+      }
+    // Delete collection and sequences
+    } else if( collection && !key ) {
+      let fileName = rocketstore.data_storage_area
+        + path.sep
+        + collection;
+      count = 0;
+
+      if( await fs.pathExists(fileName) ) {
+        promises[promises.length] = fs.remove(fileName);
+        count ++;
+      }
+
+      fileName += '_seq';
+        if( await fs.pathExists(fileName) ) {
+          promises[promises.length] = fs.remove(fileName);
+          count ++;
+        }
+      delete keyCache[collection];
+
+    // Delete records and  ( collection and sequences found with wildcards )
+    } else if( keys.length ) {
+      for(let i in keys) {
+        promises[promises.length] = fs.remove(scanDir + keys[i]);
+        if( collection ) unCache = keys[i];
+      }
+    }
+  }
+
+  if ( promises.length > 0 )
+    await Promise.all(promises);
+
+  // Clean up cache and keys
+  if( unCache.length) {
+    if( Array.isArray(keyCache[collection]) )
+      keyCache[collection] =
+        keyCache[collection].filter( ( e ) => unCache.indexOf( e ) < 0 );
+
+    if( keys != keyCache[collection] )
+      keys = keys.filter( ( e ) => unCache.indexOf( e ) < 0 );
+
+    if( record.length )
+      record = record.filter( ( e ) => e != '*deleted*' );
+  }
 
   let result = { count: count };
-  if( list && list.length > 0 )
-    result.key = list;
-  if ( key.length > 0 && record.length > 0 )
+  if( result.count && keys.length
+    && !(flags & (rocketstore._COUNT | rocketstore._DELETE))
+  )
+    result.key = keys;
+  if ( record.length > 0 )
     result.result = record;
 
   return result;
@@ -336,7 +361,7 @@ rocketstore.sequence = async (seq_name) => {
   if(typeof(name) !=="string" || name.length < 1)
     throw new Error('Sequence name i messed up');
   name += '_seq';
-  file_name = rocketstore.data_storage_area + path.sep + name;
+  fileName = rocketstore.data_storage_area + path.sep + name;
 
   // Lock file
   try {
@@ -346,7 +371,7 @@ rocketstore.sequence = async (seq_name) => {
   } catch(err) {
     if(err.code == 'ENOENT') {
       await fs.ensureDir(rocketstore.data_storage_area + path.sep + 'lockfile');
-      await fs.ensureFile(file_name);
+      await fs.ensureFile(fileName);
       await new Promise((resolve, reject) => {
         do_lock(name, resolve, reject);
       });
@@ -358,16 +383,16 @@ rocketstore.sequence = async (seq_name) => {
   // Read
   try {
     sequence = await new Promise((resolve, reject) => {
-      fs.readFile(file_name, 'utf8', (err, data) => {
+      fs.readFile(fileName, 'utf8', (err, data) => {
         if (err) reject(err);
         resolve(data);
       });
     });
   } catch(err) {
     if(err.code == 'ENOENT') {
-      await fs.ensureFile(file_name);
+      await fs.ensureFile(fileName);
       sequence = await new Promise((resolve, reject) => {
-        fs.readFile(file_name, 'utf8', (err, data) => {
+        fs.readFile(fileName, 'utf8', (err, data) => {
           if (err) reject(err);
           resolve(data);
         });
@@ -377,7 +402,7 @@ rocketstore.sequence = async (seq_name) => {
 
   sequence = 1 + (parseInt(sequence) || 0);
 
-  await fs.writeFile(file_name, "" + sequence + " ");
+  await fs.writeFile(fileName, "" + sequence + " ");
 
   // Unlock
   fs.unlink(rocketstore.data_storage_area + path.sep + 'lockfile' + path.sep + name, (err) => {
