@@ -347,6 +347,10 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Updates
+0.10.1
+- Refactoring of get methods
+- Added get flags _COUNT and _KEYS
+
 0.9.4:
 - Added Globally Unique IDentifier option to key genration. post flag: _ADD_GUID
 
