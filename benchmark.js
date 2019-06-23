@@ -86,7 +86,7 @@ const fs = require('fs-extra');
 
 const data_create = true;
 const data_delete = false;
-var data_size   = 1000;
+var data_size   = 100000;
 
 
 const record = [

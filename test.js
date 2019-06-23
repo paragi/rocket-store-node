@@ -68,6 +68,17 @@ function assert(condition, message) {
   }
 }
 
+objectHas = function(big, small){
+  for (var p in small) {
+    if(typeof(small[p]) !== typeof(big[p])) return false;
+    if((small[p]===null) !== (big[p]===null)) return false;
+    if( typeof(small[p]) === 'undefined' && typeof(small[p]) != 'undefined') return
+    if( typeof(small[p]) === 'object') return objectHas(big[p], small[p]);
+    if (small[p] !== big[p]) return false;
+  }
+  return true;
+}
+
 async function tst(describtion,func,parameters,expected_result){
   tst.tests++;
   assert(typeof describtion !== "String"
@@ -82,23 +93,7 @@ async function tst(describtion,func,parameters,expected_result){
     result = err.message;
   }
 
-  let failed = false;
-
-  if( typeof expected_result !== typeof result )
-    failed = true;
-
-  else
-    if( typeof result === "object" ){
-      for( let i in expected_result){
-        if( typeof result[i] != "undefined" && result[i] != expected_result[i] ){
-          failed = true;
-          break;
-        }
-      }
-    }else{
-      if( result != expected_result )
-      failed = true;
-      }
+  failed = !objectHas(result, expected_result);
 
   if(failed){
     tst.failed++
@@ -204,48 +199,52 @@ testcases = async () => {
     2,
   );
 
-
-  await tst(
-    "Post a record",
-    rs.post,
-    ["person",`${record['id']}-${record['name']}`,record],
-    { count: 1 },
-  );
-
   record.test = 27;
   await tst(
     "RePost a record",
     rs.post,
     ["person",`${record['id']}-${record['name']}`,record],
-    { count: 1 },
+    { key: '22756-Adam Smith', count: 1 },
   );
 
   await tst(
     "Count record",
     rs.get,
     ["person",`${record['id']}-${record['name']}`],
-    { count: 1 },
+     { count: 1,
+    key: [ '22756-Adam Smith' ],
+    result:
+     [ { id: '22756',
+         name: 'Adam Smith',
+         title: 'developer',
+         email: 'adam@smith.com',
+         phone: '+95 555 12345',
+         zip: 'DK4321',
+         country: 'Distan',
+         address: 'Elm tree road 555',
+         test: 27 }]
+    },
   );
 
   await tst(
     "Post a record, where key is empty",
     rs.post,
     ["person","",record],
-    { count: 1 },
+    { key: '1', count: 1 },
   );
 
   await tst(
     "Post with auto incremented added to key",
     rs.post,
     ["person","key",record,rs._ADD_AUTO_INC],
-    { count: 1 },
+    { key: '2-key', count: 1 },
   );
 
   await tst(
     "Post with auto incremented key only",
     rs.post,
     ["person","",record,rs._ADD_AUTO_INC],
-    { count: 1 },
+    { key: '3', count: 1 },
   );
 
   await tst(
@@ -276,13 +275,28 @@ testcases = async () => {
     { count: 1 },
   );
 
+  record['id']++;
+  await tst(
+    "Post invalid collection",
+    rs.post,
+    ["person?<|>*\":&~\x0a",`${record['id']}-${record['name']}`,record],
+    'Collection name contains illegal characters (For a javascript identifier)',
+  );
+
+  record['id']++;
+  await tst(
+    "Post invalid key",
+    rs.post,
+    ["person",`?<|>*\":&~\x0a${record['id']}-${record['name']}`,record],
+    { key: '<|>":&\n22758-Adam Smith', count: 1 },
+  );
 
   // Get
   await tst(
     "Get with exact key",
     rs.get,
-    ["person",`${record['id']}-${record['name']}`],
-    { count: 1 },
+    ["person",`22756-${record['name']}`],
+    { count: 1, key: [ '22756-Adam Smith' ] },
   );
 
   await tst(
@@ -296,7 +310,7 @@ testcases = async () => {
     "Get with wildcard in key",
     rs.get,
     ["person",`22*-${record['name']}`],
-    { count: 1 },
+    { count: 1, key: [ '22756-Adam Smith' ] },
   );
 
   await tst(
@@ -313,33 +327,10 @@ testcases = async () => {
     { count: 0 },
   );
 
-  record['id']++;
-  await tst(
-    "Post invalid collection",
-    rs.post,
-    ["person?<|>*\":&~\x0a",`${record['id']}-${record['name']}`,record],
-    'Collection name contains illegal characters (For a javascript identifier)',
-  );
-
-  record['id']++;
-  await tst(
-    "Post invalid key",
-    rs.post,
-    ["person",`?<|>*\":&~\x0a${record['id']}-${record['name']}`,record],
-    { count: 1 },
-  );
-
   await tst(
     "Get a list",
     rs.get,
     ["person","*"],
-    { count: 7 },
-  );
-
-  await tst(
-    "Get a list",
-    rs.get,
-    ["person"],
     { count: 7 },
   );
 
@@ -351,7 +342,7 @@ testcases = async () => {
   );
 
   await tst(
-    "Get list of matching collections",
+    "Get list of sequences with wildcard",
     rs.get,
     [null, "*_seq"],
     { count: 2 },
@@ -379,6 +370,7 @@ testcases = async () => {
   await rs.post("person","p2",2);
   await rs.post("person","p3",3);
 
+  // compare order of array values
   function test_order(arr1, arr2){
     for(let i in arr1)
       if(arr1[i] != arr2[i])
@@ -395,12 +387,50 @@ testcases = async () => {
     true,
   );
 
-  result = await rs.get("person","p?",rs._ORDER_DESC);
   await tst(
-    "Get order decending",
+    "Get keys",
+    rs.get,
+    ["person","p?",rs._KEYS],
+    { count: 4 },
+  );
+
+  result = await rs.get("person","p?",rs._ORDER_DESC | rs._KEYS);
+  await tst(
+    "Get keys in decending order",
     test_order,
-    [result.record,[ 4, 3, 2, 1 ]],
+    [result.key,[ 'p4', 'p3', 'p2', 'p1']],
     true,
+  );
+
+  result = await rs.get("person","p?",rs._ORDER | rs._KEYS);
+  await tst(
+    "Get keys in acending order",
+    test_order,
+    [result.key,[ 'p1', 'p2', 'p3', 'p4']],
+    true,
+  );
+
+  await tst(
+    "Get record count",
+    rs.get,
+    ["person","p?",rs._COUNT],
+    { count: 4 },
+  );
+
+  await fs.remove(`${rs.data_storage_area}/person/p2`);
+  await tst(
+    "Get manually deleted record where keys != cache",
+    rs.get,
+    ["person","p?"],
+    { count: 3, key: [ 'p1', 'p4', 'p3' ], result: [ 1, 4, 3 ] },
+  );
+
+  await fs.remove(`${rs.data_storage_area}/person/'22756-Adam Smith'`);
+  await tst(
+    "Get manually deleted record where keys == cache",
+    rs.get,
+    ["person","*"],
+    { count: 10 },
   );
 
   // test time limits
@@ -424,14 +454,14 @@ testcases = async () => {
     "Delete collection",
     rs.delete,
     ["delete_fodders1"],
-    { count: 1 },
+    { count: 2 },
   );
 
   await tst(
     "Delete nonexistent collection",
     rs.delete,
     ["delete_fodders1"],
-    { count: 1 },
+    { count: 0 },
   );
 
   await tst(

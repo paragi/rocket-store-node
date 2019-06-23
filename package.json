@@ -1,6 +1,6 @@
 {
   "name": "rocket-store",
-  "version": "0.9.4",
+  "version": "0.10.1",
   "description": "A simple, super fast and yet powerfull flat file database ",
   "main": "rocket-store.js",
   "scripts": {
@@ -37,8 +37,8 @@
   },
   "homepage": "https://github.com/paragi/rocket-store-node#readme",
   "dependencies": {
-    "fs-extra": "^7.0.0",
-    "glob-to-regexp": "^0.4.0",
+    "fs-extra": "^7.0.1",
+    "glob-to-regexp": "^0.4.1",
     "sanitize-filename": "^1.6.1"
   }
 }

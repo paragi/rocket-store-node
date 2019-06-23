@@ -9,14 +9,7 @@ Rocket-store is also available for PHP.
 
 ## Simple to use:
 ```javascript
-result = await rs.post(
-  "cars",
-  "Mercedes",
-  {
-    owner: "Lisa Simpson",
-    registration: "N3RD"
-  }
-);
+result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg: "N3RD"});
 
 result = await rs.get("cars","*",rs._ORDER_DESC);
 
@@ -112,6 +105,8 @@ __Key__ to search for. Can be mixed with wildcards '\*' and '?'. An undefined or
 __Options__:
   * _ORDER       : Results returned are ordered alphabetically acending.
   * _ORDER_DESC  : Results returned are ordered alphabetically decending.
+  * _KEYS        : Return only keys without records
+  * _COUNT       : Return only record count
 
 __Return__ an array of
 * count   : number of records affected
