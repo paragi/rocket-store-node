@@ -455,10 +455,12 @@ rocketstore.options = async (set_option) => {
     if(    typeof set_option.data_storage_area === "string"
       || typeof set_option.data_storage_area === "number"
       ) {
-        let dir = path.resolve(set_option.data_storage_area);
-        await fs.ensureDir(dir, {mode: 02775});
-        rocketstore.data_storage_area = dir;
-
+      rocketstore.data_storage_area = path.resolve(rocketstore.data_storage_area);
+        try {
+          await fs.ensureDir(rocketstore.data_storage_area, {mode: 02775})
+        } catch (err) {
+          throw new Error (`Unable to create data storage directory '${rocketstore.data_storage_area}': `,err);
+        }
     }else if ( typeof set_option.data_storage_area !== "undefined" )
         throw new Error (`Data storage area must be a directory path`);
 

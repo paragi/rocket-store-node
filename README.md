@@ -27,6 +27,7 @@ result = await rs.delete("cars","*cede*");
 * Data stored in JSON format
 * Configurable
 * Also available for PHP
+* Has an [express-session store module](https://www.npmjs.com/package/express-session-rsdb)
 
 
 ## Installation
@@ -347,6 +348,9 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Updates
+0.10.2
+- Data storage directory is now set immediately. An error is thrown later, if creation fails.
+
 0.10.1
 - Refactoring of get methods
 - Added get flags _COUNT and _KEYS
