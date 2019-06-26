@@ -36,7 +36,9 @@ result = await rs.delete("cars","*cede*");
 
 ## Usages
 
-  ```javascript const rs = require('rocket-store');```
+```javascript
+const rs = require('rocket-store');
+```
 
 Rocket-store does not require initialization:
 * The storage area defaults to the OS temp dir.
@@ -69,7 +71,7 @@ Compare rocketstore, SQL and file system terms:
 Stores a record, in a collection identified by a unique key
 
 ```javascript
-post(string <collection\>, string <key\>, mixed <record\> [, integer options])
+post(string <collection>, string <key>, mixed <record> [, integer options])
 ```
 __Collection__ name to contain the records.
 
@@ -96,7 +98,7 @@ If the function fails for any reasion, an error is thrown.
 ### Get
 Find an retrieve records, in a collection.
 ```javascript
-get([string <collection\> [,string <filename with wildcards\> [integer <option flags]]]])
+get([string <collection> [,string <filename with wildcards> [integer <option flags]]]])
 ```
 
 __Collection__ to search. If no collection name is given, get will return a list of data base assets: collections and sequences etc.
@@ -121,7 +123,7 @@ NB: wildcards are very expensive on large datasets, with most filesystems.
 Delete one or more files, whos key match.
 
 ```javascript
-delete([string <collection\> [,string <key with wildcards>]])
+delete([string <collection> [,string <key with wildcards>]])
 ```
 __Collection__ to search. If no collection is given, **THE WHOLE DATA BASE IS DELETED!**
 
