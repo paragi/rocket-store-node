@@ -154,7 +154,7 @@ await rs.options({
 ## Examples
 #### Storing records:
 ```javascript
-// Initialize    
+// Initialize (Not required)   
 const rs = require('./rocket-store');
 
 // POST a record
