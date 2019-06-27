@@ -5,11 +5,9 @@ Rocket-store is high performance solution to simple data storage and retrieval. 
 
 It's packaged in a single file to include, with few dependencies.
 
-Rocket-store is also available for PHP.
-
 ## Simple to use:
 ```javascript
-result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg: "N3RD"});
+result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg:"N3RD"});
 
 result = await rs.get("cars","*",rs._ORDER_DESC);
 
@@ -36,7 +34,7 @@ result = await rs.delete("cars","*cede*");
 
 ## Usages
 
-```javascript
+```js
 const rs = require('rocket-store');
 ```
 
@@ -350,6 +348,9 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Updates
+0.10.3
+- Bug fix: Options data_storage_area ignored.
+
 0.10.2
 - Data storage directory is now set immediately. An error is thrown later, if creation fails.
 

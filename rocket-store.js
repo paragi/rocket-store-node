@@ -455,7 +455,7 @@ rocketstore.options = async (set_option) => {
     if(    typeof set_option.data_storage_area === "string"
       || typeof set_option.data_storage_area === "number"
       ) {
-      rocketstore.data_storage_area = path.resolve(rocketstore.data_storage_area);
+      rocketstore.data_storage_area = path.resolve(set_option.data_storage_area);
         try {
           await fs.ensureDir(rocketstore.data_storage_area, {mode: 02775})
         } catch (err) {

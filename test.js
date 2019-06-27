@@ -69,13 +69,14 @@ function assert(condition, message) {
 }
 
 objectHas = function(big, small){
-  for (var p in small) {
-    if(typeof(small[p]) !== typeof(big[p])) return false;
-    if((small[p]===null) !== (big[p]===null)) return false;
-    if( typeof(small[p]) === 'undefined' && typeof(small[p]) != 'undefined') return
-    if( typeof(small[p]) === 'object') return objectHas(big[p], small[p]);
-    if (small[p] !== big[p]) return false;
-  }
+  if( typeof small === 'undefined' ) return true;
+  if( ( small === null ) !== ( big === null ) ) return false;
+  if( typeof small !== typeof big ) return false;
+  if( typeof small === 'object')
+    for (var p in small){
+      if(!objectHas(big[p], small[p])) return false;
+    }
+  else if (small !== big) return false;
   return true;
 }
 
@@ -154,7 +155,7 @@ testcases = async () => {
     "Set options to unwriteable directory",
     rs.options,
     [{data_storage_area: "/rsdb/sdgdf/",data_format: rs._FORMAT_NATIVE}],
-    "EACCES: permission denied, mkdir '/rsdb'",
+    "Unable to create data storage directory '/rsdb/sdgdf': ",
   );
 
   await tst(
