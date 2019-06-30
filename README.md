@@ -6,9 +6,10 @@ Rocket-store is a high performance solution to simple data storage and retrieval
 It's packaged in a single file to include, with few dependencies.
 
 
-[![License](https://img.shields.io/npm/l/express.svg)](https://github.com/jprichardson/rocket-store/blob/master/LICENSE)
+[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![downloads per month](http://img.shields.io/npm/dm/rocket-store.svg)](https://www.npmjs.org/package/rocket-store)
-
+[![Issues](http://img.shields.io/github/issues/paragi/rocket-store.svg)]( https://github.com/Paragi/rocket-store/issues )
+[![GitHub pull-requests](https://img.shields.io/github/issues-pr/paragi/rocket-store.svg)](https://GitHub.com/paragi/rocket-store/pull/)
 
 ## Simple to use:
 ```javascript
