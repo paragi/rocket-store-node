@@ -9,6 +9,7 @@ It's packaged in a single file to include, with few dependencies.
 [![License](https://img.shields.io/npm/l/express.svg)](https://github.com/jprichardson/rocket-store/blob/master/LICENSE)
 [![downloads per month](http://img.shields.io/npm/dm/rocket-store.svg)](https://www.npmjs.org/package/rocket-store)
 
+
 ## Simple to use:
 ```javascript
 result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg:"N3RD"});
