@@ -1,10 +1,11 @@
 # Rocket-Store
-**Using the filesystem as a searchable database.**
 
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![downloads per month](http://img.shields.io/npm/dm/rocket-store.svg)](https://www.npmjs.org/package/rocket-store)
 [![Issues](http://img.shields.io/github/issues/paragi/rocket-store.svg)]( https://github.com/Paragi/rocket-store/issues )
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/paragi/rocket-store.svg)](https://GitHub.com/paragi/rocket-store/pull/)
+
+**Using the filesystem as a searchable database.**
 
 Rocket-Store is a high performance solution to simple data storage and retrieval. It's taking advantage of modern file system's exceptionally advanced cashing mechanisms.
 

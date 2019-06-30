@@ -521,9 +521,9 @@ testcases = async () => {
   await Promise.all(promises);
 
   await tst(
-    "Post asynchronous integrity of written objects" ,
+    "Post test asynchronous integrity of records" ,
     rs.get,
-    ["async"],
+    ["async","",rs._ORDER_ASC],
     {
       count: 4,
       key: [ '0', '1', '2', '3' ],
