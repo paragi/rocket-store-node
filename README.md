@@ -1,7 +1,7 @@
 # Rocket Store
 **Using the filesystem as a searchable database.**
 
-Rocket-store is high performance solution to simple data storage and retrieval. It's taking advantage of modern file systems exceptionally advanced cashing mechanisms.
+Rocket-store is a high performance solution to simple data storage and retrieval. It's taking advantage of modern file system's exceptionally advanced cashing mechanisms.
 
 It's packaged in a single file to include, with few dependencies.
 
@@ -25,7 +25,7 @@ result = await rs.delete("cars","*cede*");
 * Very reliant
 * Very little footprint.
 * Very flexible.
-* few dependencies
+* Few dependencies
 * Works without configuration or setup.
 * Data stored in JSON format
 * Configurable
@@ -48,7 +48,7 @@ Rocket-store does not require initialization:
 * When trying to get a non existant collection, the reply is that no records were found.
 * When posting to a non existant collection, it is created.
 
-How ever you can set the storage area and data format to use, with the setOption function, before doing any operation on the data.
+However you can set the storage area and data format to use, with the setOption function, before doing any operation on the data.
 
 ## Basic terminology
 Rocketstore was made to replace a more complex database, in a setting that required a low footprint and high performance.
@@ -59,7 +59,7 @@ Terms used:
 * __Collection__: name of a collections of records. (Like an SQL table)
 * __Record__: the data store. (Like an SQL row)
 * __Data storage area__: area/directory where collections are stored. (Like SQL data base)
-* __Key__: all records has exactly one unique key, witch is the same as a file name, with the same restrictions, and the same wildcards used in searches.
+* __Key__: every record has exactly one unique key, which is the same as a file name (same restrictions) and the same wildcards used in searches.
 
 Compare rocketstore, SQL and file system terms:
 
@@ -71,7 +71,7 @@ Compare rocketstore, SQL and file system terms:
 | __record__           |  row          |  file                  |
 
 ### Post
-Stores a record, in a collection identified by a unique key
+Stores a record in a collection identified by a unique key
 
 ```javascript
 post(string <collection>, string <key>, mixed <record> [, integer options])
@@ -96,31 +96,31 @@ If the key already exists, the record will be replaced.
 
 If no key is given, an auto-incremented sequence is used as key.
 
-If the function fails for any reasion, an error is thrown.
+If the function fails for any reason, an error is thrown.
 
 ### Get
-Find an retrieve records, in a collection.
+Find and retrieve records, in a collection.
 ```javascript
 get([string <collection> [,string <filename with wildcards> [integer <option flags]]]])
 ```
 
 __Collection__ to search. If no collection name is given, get will return a list of data base assets: collections and sequences etc.
 
-__Key__ to search for. Can be mixed with wildcards '\*' and '?'. An undefined or empty key is the equvivalent of '*'
+__Key__ to search for. Can be mixed with wildcards '\*' and '?'. An undefined or empty key is the equivalent of '*'
 
 __Options__:
-  * _ORDER       : Results returned are ordered alphabetically acending.
-  * _ORDER_DESC  : Results returned are ordered alphabetically decending.
-  * _KEYS        : Return only keys without records
-  * _COUNT       : Return only record count
+  * _ORDER       : Results returned are ordered alphabetically ascending.
+  * _ORDER_DESC  : Results returned are ordered alphabetically descending.
+  * _KEYS        : Return keys only (no records)
+  * _COUNT       : Return record count only
 
 __Return__ an array of
 * count   : number of records affected
 * key     : array of keys
 * result  : array of records
 
-NB: wildcards are very expensive on large datasets, with most filesystems.
-(on a regular PC with +10^7 records in the collection, it might take up to a second to retreive one record, where as one might retreive up to 100.000 records with an exact key match)
+NB: wildcards are very expensive on large datasets with most filesystems.
+(on a regular PC with +10^7 records in the collection, it might take up to a second to retreive one record, whereas one might retrieve up to 100.000 records with an exact key match)
 
 ### Delete
 Delete one or more records, whos key match.
@@ -294,7 +294,7 @@ The above example might output this:
 result = await rs.get("cars", "*BMW*");
 ```
 
-##### Get list ordered by alphabetically decending keys
+##### Get list ordered by alphabetically descending keys
 ```javascript
 result = await rs.get("cars", "*BMW*",rs._ORDER_DESC);
 ```

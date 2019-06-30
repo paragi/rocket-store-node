@@ -1,7 +1,7 @@
 /*============================================================================*\
   Rocket Store
 
-  A very simple and yes powerful file storage.
+  A very simple and yet powerful file storage.
 
   (c) Paragi 2017, Simon Riget.
 
@@ -23,12 +23,12 @@
   +------------------+---------------+------------------------+
 
   File system issue
-  In this node version, a compromise is struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, that are able to filter a directory search, on a low level. Instead, an array of all entries is read.
-  This consumes a lot of memory, with a large database. There is no avoiding that, short of improving the node file system library. This is beyond my intentions, at this time. I hope it will be remedied by the node core team.
-  Instead in this module i have accepted the consumption of memory, but as a compromise, strife to reuse it to improve speed on key searching, by keeping the read keys in memory between searched, in a keyCache.
+  In this node version, a compromise is struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, that is able to filter a directory search on a low level. Instead, an array of all entries is read.
+  This consumes a lot of memory with a large database. There is no avoiding that, short of improving the node file system library. This is beyond my intentions, at this time. I hope it will be remedied by the node core team.
+  Instead in this module I have accepted the consumption of memory, but as a compromise, strive to reuse it to improve speed on key searching by keeping the read keys in memory between searched (keyCache).
   keyCache has to be maintained in the post and get methods.
 
-  A draw back of this is that collection names are restricted to valid variable names as well as directory names.
+  A drawback of this is that collection names are restricted to valid variable names as well as directory names.
 
 \*============================================================================*/
 const fs = require('fs-extra')
@@ -86,7 +86,7 @@ var keyCache ={};
 /*===========================================================================*\
   Post a data record (Insert or overwrite)
 
-  If keyCache exists for the given collection, entries is added.
+  If keyCache exists for the given collection, entries are added.
 \*===========================================================================*/
 rocketstore.post = async (collection, key, record ,flags) => {
 
@@ -99,7 +99,7 @@ rocketstore.post = async (collection, key, record ,flags) => {
 
 
   key = fileNameWash("" + ( key || "" ))
-    .replace(/[\*\?]/g, '');  // Remove wildwards (unix only)
+    .replace(/[\*\?]/g, '');  // Remove wildcards (unix only)
 
   if(typeof(flags) !=="number")
       flags = 0;
@@ -152,7 +152,7 @@ rocketstore.post = async (collection, key, record ,flags) => {
   Cashing:
   Whenever readdir is called, keys are stores in keyCache, pr. collection.
   The keyCache is maintained whenever a record is deleted or added.
-  Except for searches in the root (list of collections etc.) wish must be read each time.
+  One exception are searches in the root (list of collections etc.), which must be read each time.
 
   NB: Files may have been removed manually and should be removed from the cache
 
@@ -350,7 +350,7 @@ rocketstore.delete = async (collection, key) => {
 /*===========================================================================*\
   Get and auto incremented sequence or create it
 
-  Using the binary flock interface of the fs-ext package. (Might not be supportted by alle file systems?
+  Using the binary flock interface of the fs-ext package. (Might not be supported by all file systems?
 
 \*===========================================================================*/
 rocketstore.sequence = async (seq_name) => {
@@ -480,7 +480,7 @@ rocketstore.options = async (set_option) => {
 \*===========================================================================*/
 function fileNameWash( name ){
     if( os.platform() == 'win32' )
-        return sanatize(name);
+        return sanitize(name);
     else{
         return name
           .replace(/[\/\\\x00~]/g, '') // remove / \ ~ zero
