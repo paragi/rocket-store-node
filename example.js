@@ -61,7 +61,7 @@ const rs = require('./rocket-store');
   );
 
 
-  console.log("Get list ordered by alphabetically decending keys:\n",
+  console.log("Get list ordered by alphabetically descending keys:\n",
     await rs.get("cars", "", rs._ORDER_DESC)
   );
 

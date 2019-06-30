@@ -1,19 +1,19 @@
 /*
   NB: The node file system code has a serious issue with large directories.
 
-  All this should go away, when the node core team implements better methods for iterating over directory entries.
-  For instance if it becomes able to process wildcards on a lower level and/or stream directory entries.
+  All this should go away when the node core team implements better methods for iterating over directory entries.
+  For instance, if it becomes able to process wildcards on a lower level and/or stream directory entries.
 
-  Node file system return an array of all filenames in a directory. This is higly innapropriate, in an mature language.
-  There is no other way around it, than using another binary library function than libuv.
+  Node file system return an array of all filenames in a directory. This is higly inappropriate in an mature language.
+  There is no other way around it, other than using another binary library function than libuv.
 
-  The approch taken here, is to implement rocket-store anyway, in the hope that it will be remedied soon.
-  There is a bug repport descussing the issue here: https://github.com/nodejs/node/issues/583
+  The approach taken here, is to implement rocket-store anyway, in the hope that it will be remedied soon.
+  There is a bug report discussing the issue here: https://github.com/nodejs/node/issues/583
 
-  The issue recides in https://github.com/nodejs/node/blob/master/src/node_file.cc
+  The issue resides in https://github.com/nodejs/node/blob/master/src/node_file.cc
 
 
-  Approch with node implementation:
+  Approach with node implementation:
 
   Since all wildcard searches will use readdir, we might aswell take advantage of the already allocated data, and reuse it for speed.
 
@@ -22,12 +22,12 @@
   Increase node memory limit with the option --max-old-space-size=n (in kB)
     ex  node --max-old-space-size=8192 server.js
 
-  Also some memory optimazation and considerations are added.
+  Also some memory optimizations and considerations are added.
 
 
-  Optimazation:
+  Optimization:
 
-  NB: This will be removed, when the node file system functions has matured.
+  NB: This will be removed when the node file system functions has matured.
 
   Memory optimizing and garbage collection is based on a few assumtions, that hopefully suits most use cases.
 
@@ -36,7 +36,7 @@
   using v8.getHeapSpaceStatistics() to gauge the amount of available memory.
     v8.getHeapSpaceStatistics()[5].space_available_size
 
-  Dont bother with arrays smaller than 1% ( set with optimice_larger_than )
+  Don't bother with arrays smaller than 1% ( set with optimice_larger_than )
 
   be more agressive when free memory is low
   be more agressive when cash is seldom used
@@ -46,10 +46,10 @@
   NB: Javascript associative arrays are objects. Therefore there are restrictions on the use of key names:
 
   The first character must be a letter or an underscore.
-  The rest of the name can't be anything other than letters, numbers, or underscore.
+  The rest of the name can't be anything other than letters, numbers, or underscores.
 
-  Therefore the results returned consists og two array:
-    key and record, whos indexes coorsponds.
+  Therefore the results returned consist of two arrays:
+    key and record, whos indexes correspond.
 
 */
 
@@ -79,10 +79,10 @@ objectHas = function(big, small){
   return true;
 }
 
-async function tst(describtion,func,parameters,expected_result){
+async function tst(description,func,parameters,expected_result){
   tst.tests++;
-  assert(typeof describtion !== "String"
-    ,"Parameter 1 describtion must be a string");
+  assert(typeof description !== "String"
+    ,"Parameter 1 description must be a string");
   assert(typeof func !== "Function","Parameter 2 func must be a function");
   assert(typeof parameters !== "Object"
     ,"Parameter 3 parameters must be an array object");
@@ -97,13 +97,13 @@ async function tst(describtion,func,parameters,expected_result){
 
   if(failed){
     tst.failed++
-    console.group("\x1b[31mFailed\x1b[0m: " + describtion);
-    console.log("patameters: ", parameters);
-    console.log("Ecpected:",expected_result);
+    console.group("\x1b[31mFailed\x1b[0m: " + description);
+    console.log("Parameters: ", parameters);
+    console.log("Expected:",expected_result);
     console.log("got:", result);
     console.trace();
   }else{
-    console.group("\x1b[32mOK\x1b[0m: " + describtion);
+    console.group("\x1b[32mOK\x1b[0m: " + description);
   }
   console.groupEnd();
 }
@@ -151,7 +151,7 @@ testcases = async () => {
   fs.remove("./rs")
 
   await tst(
-    "Set options to unwriteable directory",
+    "Set options to unwritable directory",
     rs.options,
     [{data_storage_area: "/rsdb/sdgdf/",data_format: rs._FORMAT_NATIVE}],
     "EACCES: permission denied, mkdir '/rsdb'",
@@ -201,7 +201,7 @@ testcases = async () => {
 
   record.test = 27;
   await tst(
-    "RePost a record",
+    "Repost a record",
     rs.post,
     ["person",`${record['id']}-${record['name']}`,record],
     { key: '22756-Adam Smith', count: 1 },
@@ -227,49 +227,49 @@ testcases = async () => {
   );
 
   await tst(
-    "Post a record, where key is empty",
+    "Post a record with empty key",
     rs.post,
     ["person","",record],
     { key: '1', count: 1 },
   );
 
   await tst(
-    "Post with auto incremented added to key",
+    "Post a record with auto incremented value added to key",
     rs.post,
     ["person","key",record,rs._ADD_AUTO_INC],
     { key: '2-key', count: 1 },
   );
 
   await tst(
-    "Post with auto incremented key only",
+    "Post a record with auto incremented key only",
     rs.post,
     ["person","",record,rs._ADD_AUTO_INC],
     { key: '3', count: 1 },
   );
 
   await tst(
-    "Post a record, where collection is empty",
+    "Post a record with empty collection",
     rs.post,
     ["","bad",record],
     'No valid collection name given',
   );
 
   await tst(
-    "Post a record, where collection name only has illigal chars",
+    "Post a record with collection name that contains illegal chars",
     rs.post,
     ["\x00./.\x00","bad",record],
     'Collection name contains illegal characters (For a javascript identifier)',
   );
 
   await tst(
-    "Post with GUID added to key",
+    "Post a record with GUID added to key",
     rs.post,
     ["person","key-value",record,rs._ADD_GUID],
     { count: 1 },
   );
 
   await tst(
-    "Post with GUID key only",
+    "Post a record with GUID key only",
     rs.post,
     ["person","",record,rs._ADD_GUID],
     { count: 1 },
@@ -396,7 +396,7 @@ testcases = async () => {
 
   result = await rs.get("person","p?",rs._ORDER_DESC | rs._KEYS);
   await tst(
-    "Get keys in decending order",
+    "Get keys in descending order",
     test_order,
     [result.key,[ 'p4', 'p3', 'p2', 'p1']],
     true,
@@ -404,7 +404,7 @@ testcases = async () => {
 
   result = await rs.get("person","p?",rs._ORDER | rs._KEYS);
   await tst(
-    "Get keys in acending order",
+    "Get keys in ascending order",
     test_order,
     [result.key,[ 'p1', 'p2', 'p3', 'p4']],
     true,
