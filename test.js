@@ -508,6 +508,33 @@ testcases = async () => {
     'Collection name contains illegal characters (For a javascript identifier)',
   );
 
+  // Test asynchronous integrity
+  let i;
+  let obj = {}
+  let promises = [];
+
+  for( i = 0; i<4; i++ ){
+    obj.id = i;
+    promises.push( rs.post("async",i,obj) );
+  }
+
+  await Promise.all(promises);
+
+  await tst(
+    "Post asynchronous integrity of written objects" ,
+    rs.get,
+    ["async"],
+    {
+      count: 4,
+      key: [ '0', '1', '2', '3' ],
+      result: [
+        { id: 0 },
+        { id: 1 },
+        { id: 2 },
+        { id: 3 }
+      ]
+    }
+  );
 
   fs.remove(rs.data_storage_area);
 

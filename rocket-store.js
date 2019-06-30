@@ -97,9 +97,10 @@ rocketstore.post = async (collection, key, record ,flags) => {
   if( !identifierNameTest(collection) )
     throw new Error('Collection name contains illegal characters (For a javascript identifier)');
 
-
-  key = fileNameWash("" + ( key || "" ))
-    .replace(/[\*\?]/g, '');  // Remove wildwards (unix only)
+  // Remove wildwards (unix only)
+  key = typeof key === 'number' || key ?
+    fileNameWash("" + key ).replace(/[\*\?]/g, '')
+    : '';
 
   if(typeof(flags) !=="number")
       flags = 0;
@@ -127,9 +128,9 @@ rocketstore.post = async (collection, key, record ,flags) => {
     + path.sep
     + key;
 
-  if(rocketstore.data_format & rocketstore._FORMAT_JSON)
-      await fs.outputJson(fileName, record);
-  else
+  if(rocketstore.data_format & rocketstore._FORMAT_JSON){
+      await fs.outputFile(fileName, JSON.stringify(record) );
+  }else
       throw new Error('Sorry, that data format is not supported');
 
   // Store key in cash
