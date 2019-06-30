@@ -1,7 +1,7 @@
-# Rocket Store
+# Rocket-Store
 **Using the filesystem as a searchable database.**
 
-Rocket-store is a high performance solution to simple data storage and retrieval. It's taking advantage of modern file system's exceptionally advanced cashing mechanisms.
+Rocket-Store is a high performance solution to simple data storage and retrieval. It's taking advantage of modern file system's exceptionally advanced cashing mechanisms.
 
 It's packaged in a single file to include, with few dependencies.
 
@@ -10,6 +10,11 @@ It's packaged in a single file to include, with few dependencies.
 [![downloads per month](http://img.shields.io/npm/dm/rocket-store.svg)](https://www.npmjs.org/package/rocket-store)
 [![Issues](http://img.shields.io/github/issues/paragi/rocket-store.svg)]( https://github.com/Paragi/rocket-store/issues )
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/paragi/rocket-store.svg)](https://GitHub.com/paragi/rocket-store/pull/)
+
+Rocket-Store is a high performance solution to simple data storage and retrieval. It's taking advantage of modern file system's exceptionally advanced cashing mechanisms.
+
+It's packaged in a single file to include, with few dependencies.
+
 
 ## Simple to use:
 ```javascript
@@ -44,7 +49,7 @@ result = await rs.delete("cars","*cede*");
 const rs = require('rocket-store');
 ```
 
-Rocket-store does not require initialization:
+Rocket-Store does not require initialization:
 * The storage area defaults to the OS temp dir.
 * When trying to get a non existant collection, the reply is that no records were found.
 * When posting to a non existant collection, it is created.
@@ -52,9 +57,9 @@ Rocket-store does not require initialization:
 However you can set the storage area and data format to use, with the setOption function, before doing any operation on the data.
 
 ## Basic terminology
-Rocketstore was made to replace a more complex database, in a setting that required a low footprint and high performance.
+Rocket-Store was made to replace a more complex database, in a setting that required a low footprint and high performance.
 
-Rocketstore is intended to store and retrieve records/documents, organized in collections, using a key.
+Rocket-Store is intended to store and retrieve records/documents, organized in collections, using a key.
 
 Terms used:
 * __Collection__: name of a collections of records. (Like an SQL table)
@@ -62,9 +67,9 @@ Terms used:
 * __Data storage area__: area/directory where collections are stored. (Like SQL data base)
 * __Key__: every record has exactly one unique key, which is the same as a file name (same restrictions) and the same wildcards used in searches.
 
-Compare rocketstore, SQL and file system terms:
+Compare Rocket-Store, SQL and file system terms:
 
-| Rocket store | SQL| File system |
+| Rocket-Store | SQL| File system |
 |---|---|---
 | __storage area__     |  database     |  data directory root   |
 | __collection__       |  table        |  directory             |
