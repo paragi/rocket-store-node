@@ -5,11 +5,14 @@ Rocket-store is high performance solution to simple data storage and retrieval. 
 
 It's packaged in a single file to include, with few dependencies.
 
-Rocket-store is also available for PHP.
+
+[![License](https://img.shields.io/npm/l/express.svg)](https://github.com/jprichardson/rocket-store/blob/master/LICENSE)
+[![downloads per month](http://img.shields.io/npm/dm/rocket-store.svg)](https://www.npmjs.org/package/rocket-store)
+
 
 ## Simple to use:
 ```javascript
-result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg: "N3RD"});
+result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg:"N3RD"});
 
 result = await rs.get("cars","*",rs._ORDER_DESC);
 
@@ -27,7 +30,7 @@ result = await rs.delete("cars","*cede*");
 * Data stored in JSON format
 * Configurable
 * Also available for PHP
-* Has an [express-session store module](https://www.npmjs.com/package/express-session-rsdb)
+* Has a [session store module for express](https://www.npmjs.com/package/express-session-rsdb)
 
 
 ## Installation
@@ -36,7 +39,7 @@ result = await rs.delete("cars","*cede*");
 
 ## Usages
 
-```javascript
+```js
 const rs = require('rocket-store');
 ```
 
@@ -91,7 +94,7 @@ __Returns__ an associative array containing the result of the operation:
 
 If the key already exists, the record will be replaced.
 
-
+If no key is given, an auto-incremented sequence is used as key.
 
 If the function fails for any reasion, an error is thrown.
 
@@ -120,11 +123,12 @@ NB: wildcards are very expensive on large datasets, with most filesystems.
 (on a regular PC with +10^7 records in the collection, it might take up to a second to retreive one record, where as one might retreive up to 100.000 records with an exact key match)
 
 ### Delete
-Delete one or more files, whos key match.
+Delete one or more records, whos key match.
 
 ```javascript
 delete([string <collection> [,string <key with wildcards>]])
 ```
+
 __Collection__ to search. If no collection is given, **THE WHOLE DATA BASE IS DELETED!**
 
 __Key__ to search for. Can be mixed with wildcards '\*' and '?'. If no key is given, **THE ENTIRE COLLECTION INCLUDING SEQUENCES IS DELETED!**
@@ -342,14 +346,20 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Contributions
-* Contributions of any kind are highly appreciated.
-* Don't hesitate to submit an issue report on github. But please provide a reproducible example.
+* I appreciate all kinds of contribution.
+* Don't hesitate to submit an issue report on [github](https://github.com/paragi/rocket-store/issues). But please provide a reproducible example.
 * Code should look good and compact, and be covered by a test case or example.
 * Please don't change the formatting style laid out, without a good reason. I know its not the most common standard, but its rather efficient one.
 
 
 ---
 ## Updates
+0.10.4
+- Bug fix: Asynchronous integrity of records failed. Circumvent bug in fs.extra
+
+0.10.3
+- Bug fix: Options data_storage_area ignored.
+
 0.10.2
 - Data storage directory is now set immediately. An error is thrown later, if creation fails.
 
