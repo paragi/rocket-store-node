@@ -434,6 +434,18 @@ testcases = async () => {
     { count: 10 },
   );
 
+
+  let key = "No Smith";
+  await rs.delete("person");
+  await rs.post("person",key, "should be ok");
+  await fs.outputFile(`${rs.data_storage_area}/person/${key}`,"not a JSON{");
+  await tst(
+    "Get invalid JSON in file",
+    rs.get,
+    ["person"],
+    { count: 1, key: [ 'No Smith' ], result: [ '' ] },
+  );
+
   // test time limits
   // test Json and XML
 
@@ -508,7 +520,8 @@ testcases = async () => {
     'Collection name contains illegal characters (For a javascript identifier)',
   );
 
-  // Test asynchronous integrity
+
+  // Test asynchronous object integrity
   let i;
   let obj = {}
   let promises = [];
@@ -536,7 +549,13 @@ testcases = async () => {
     }
   );
 
-  fs.remove(rs.data_storage_area);
+
+  await tst(
+    "Delete database" ,
+    rs.delete,
+    [],
+    { count: 1 },
+  );
 
   await tst.sum();
 };
