@@ -33,6 +33,7 @@ result = await rs.delete("cars","*cede*");
 * Configurable
 * Also available for PHP
 * Has a [session store module for express](https://www.npmjs.com/package/express-session-rsdb)
+* Asynchronous mutation safe
 
 
 ## Installation
@@ -356,6 +357,11 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Updates
+0.10.6
+- Bug fix: Corupted og invalid files now returns an empty record, instead of throwing an error.
+
+0.10.5 repository version correction
+
 0.10.4
 - Bug fix: Asynchronous integrity of records failed. Circumvent bug in fs.extra
 

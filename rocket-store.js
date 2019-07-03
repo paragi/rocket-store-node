@@ -265,7 +265,11 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
                   resolve();
                 }
               } else {
-                record[i] = JSON.parse(data);
+                try {
+                  record[i] = JSON.parse(data);
+                } catch (err) {
+                  record[i] = '';
+                }
                 resolve();
               }
             }

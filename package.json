@@ -1,6 +1,6 @@
 {
   "name": "rocket-store",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "description": "A simple, super fast and yet powerfull flat file database ",
   "main": "rocket-store.js",
   "scripts": {
