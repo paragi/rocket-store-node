@@ -30,6 +30,20 @@
 
   A drawback of this is that collection names are restricted to valid variable names as well as directory names.
 
+-------------------------------
+To do 
+This has been released in nodes libuv 12.12.0:
+
+const fs = require('fs');
+
+async function print(path) {
+  const dir = await fs.promises.opendir(path);
+  for await (const dirent of dir) {
+    console.log(dirent.name);
+  }
+}
+print('./').catch(console.error);
+
 \*============================================================================*/
 const fs = require('fs-extra')
 const sanitize = require("sanitize-filename");
