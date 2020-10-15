@@ -323,18 +323,18 @@ rs.delete();
 ---
 
 ## File system issue
-In this node version (ver 11) a compromise is struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, to filter a directory search on a low level. Instead, an array of all entries is read.
+This was made with node ver 11. A compromise was struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, to filter a directory search on a low level. Instead, an array of all entries is read.
 
 This consumes a lot of memory, with a large database. There is no avoiding that, short of improving opon the node file system library. This is beyond my intentions, at this time. I hope it will be remedied by the node core team.
 
-Instead in as a compromise the memory that will be used any way is applied to improve speed on key searching, by keeping the read keys in memory between searched as a key_cash.
+Since the memory will be used anyway, it is applied to improve speed on key searching, by keeping the read keys in memory between searched, as a key_cash.
 
-A draw back of this is that collection names are restricted to valid variable names as well as directory names.
+A draw back of this, is that collection names are restricted to valid variable names, as well as directory names.
 
 Another issue is that file locking is yet to be implementet in node.
 Therefore a time consuming locking mecahnism is implemented as symlinks.
 
-Both solutions will be changed, as node matures.
+Both solutions will hopefully be changed, as node matures.
 
 ---
 ## Benchmarks
@@ -357,6 +357,9 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Updates
+0.10.7 
+- Bug fix: Wildcard search on windows OS failed to find valid keys.
+
 0.10.6
 - Bug fix: Corupted og invalid files now returns an empty record, instead of throwing an error.
 

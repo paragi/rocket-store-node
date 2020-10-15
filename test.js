@@ -80,6 +80,8 @@ objectHas = function(big, small){
   return true;
 }
 
+osIsWindows = os.platform() == 'win32';
+
 async function tst(description,func,parameters,expected_result){
   tst.tests++;
   assert(typeof description !== "String"
@@ -285,12 +287,20 @@ testcases = async () => {
   );
 
   record['id']++;
-  await tst(
-    "Post invalid key",
-    rs.post,
-    ["person",`?<|>*\":&~\x0a${record['id']}-${record['name']}`,record],
-    { key: '<|>":&\n22758-Adam Smith', count: 1 },
-  );
+  if( osIsWindows )
+    await tst(
+      "Post invalid key",
+      rs.post,
+      ["person",`x?<|>*\":\x0a${record['id']}-${record['name']}`,record],
+      { key: 'x22758-Adam Smith', count: 1 },
+    );
+  else
+    await tst(
+      "Post invalid key",
+      rs.post,
+      ["person",`x?<|>*\":&~\x0a${record['id']}-${record['name']}`,record],
+      { key: 'x<|>":&\n22758-Adam Smith', count: 1 },
+    );
 
   // Get
   await tst(
@@ -313,7 +323,7 @@ testcases = async () => {
     ["person",`22*-${record['name']}`],
     { count: 1, key: [ '22756-Adam Smith' ] },
   );
-
+  
   await tst(
     "Get exact key no hit",
     rs.get,

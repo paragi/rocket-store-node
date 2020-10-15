@@ -185,9 +185,9 @@ rocketstore.get = async (collection, key, flags, min_time, max_time ) => {
   collection = "" + ( collection || "");
   if( collection.length > 0 && !identifierNameTest(collection) )
     throw new Error('Collection name contains illegal characters (For a javascript identifier)');
-
+ 
   // Check key validity
-  key = fileNameWash("" + ( key || "" )).replace(/[*]{2,}/g, '*'); // remove globstars **
+  key = fileNameWash("" + ( key || "" )).replace(/[*]{2,}/g, '*', true); // remove globstars **
 
   // Prepare search
   let scanDir = rocketstore.data_storage_area + path.sep
@@ -497,15 +497,32 @@ rocketstore.options = async (set_option) => {
 /*===========================================================================*\
                             File name washer
 \*===========================================================================*/
-function fileNameWash( name ){
-    if( os.platform() == 'win32' )
-        return sanitize(name);
-    else{
-        return name
-          .replace(/[\/\\\x00~]/g, '') // remove / \ ~ zero
-          .replace(/[.]{2,}/g, '')     // Remove double
+function fileNameWash( name , preserve_wildcards = false){
+
+    if( os.platform() == 'win32' ) {
+      let n1, n2;
+      if( !preserve_wildcards )
+        n1 = name.replace(/\*\?/, '');
+      else
+        n1 = name;  
+
+      n2 = 
+        n1.replace(/[\/<>\\:\|"]/g, '')
+        .replace(/[\x00-\x1f\x80-\x9f]/g, '')
+        .replace(/^\.+$/, '')
+        .replace(/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i, '')
+        .replace(/[\. ]+$/, '');
+      
+      return n2.substring(0,255)
+
+    } else {
+      return name
+        .replace(/[\/\\\x00~]/g, '') // remove / \ ~ zero
+        .replace(/[.]{2,}/g, '')     // Remove double
     }
 }
+
+
 
 // ECMAScript 6:
 // By Mathias Bynens mathiasbynens
