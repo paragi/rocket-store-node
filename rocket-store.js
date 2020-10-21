@@ -46,7 +46,6 @@ print('./').catch(console.error);
 
 \*============================================================================*/
 const fs = require('fs-extra')
-const sanitize = require("sanitize-filename");
 const path = require('path');
 const os = require('os');
 const globToRegExp = require('glob-to-regexp');

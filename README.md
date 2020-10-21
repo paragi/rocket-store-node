@@ -357,6 +357,8 @@ Benchmarks are performed with 1 million records in in a single collection.
 
 ---
 ## Updates
+0.10.8
+- removed unneeded module sanitise-filename
 0.10.7 
 - Bug fix: Wildcard search on windows OS failed to find valid keys.
 
