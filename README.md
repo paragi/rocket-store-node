@@ -27,7 +27,7 @@ result = await rs.delete("cars","*cede*");
 * Very reliant
 * Very little footprint.
 * Very flexible.
-* Few dependencies
+* One dependency
 * Works without configuration or setup.
 * Data stored in JSON format
 * Configurable
@@ -38,7 +38,11 @@ result = await rs.delete("cars","*cede*");
 
 ## Installation
 
+  Just run:
+
+  ```shell
     npm install rocket-store
+  ```
 
 ## Usages
 
@@ -54,6 +58,7 @@ Rocket-Store does not require initialization:
 However you can set the storage area and data format to use, with the setOption function, before doing any operation on the data.
 
 ## Basic terminology
+
 Rocket-Store was made to replace a more complex database, in a setting that required a low footprint and high performance.
 
 Rocket-Store is intended to store and retrieve records/documents, organized in collections, using a key.
@@ -145,11 +150,22 @@ Configuration options is an associative array, that can be parsed during require
 The array can have these options:
 
 #### Set data storage directory and file format to JSON
+Common JS
 ```javascript
 const rs = require('rocket-store');
 
 await rs.options({
   data_storage_area : "/home/rddb/webapp",
+  data_format       : rs._FORMAT_JSON,
+});
+```
+
+Module
+```javascript
+import { rocketstore } from "rocket-store";
+
+const rs = await rocketstore({
+	data_storage_area : "/home/rddb/webapp",
   data_format       : rs._FORMAT_JSON,
 });
 ```
@@ -162,9 +178,25 @@ await rs.options({
 
 ## Examples
 #### Storing records:
+Common JS
 ```javascript
 // Initialize (Not required)   
 const rs = require('./rocket-store');
+
+// POST a record
+result = await rs.post("cars", "Mercedes_Benz_GT_R", {owner: "Lisa Simpson"});
+
+// GET a record
+result = await rs.get("cars", "*");
+
+console.log(result);
+```
+
+Module
+```javascript
+// Initialize (Not required)   
+import { rocketstore } from "rocket-store";
+const rs = await rocketstore()
 
 // POST a record
 result = await rs.post("cars", "Mercedes_Benz_GT_R", {owner: "Lisa Simpson"});
@@ -299,7 +331,7 @@ result = await rs.get("cars", "*BMW*");
 
 ##### Get list ordered by alphabetically descending keys
 ```javascript
-result = await rs.get("cars", "*BMW*",rs._ORDER_DESC);
+result = await rs.get("cars", "*BMW*", rs._ORDER_DESC);
 ```
 
 ##### Get list of collections and sequences

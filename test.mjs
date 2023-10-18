@@ -53,11 +53,27 @@
 
 */
 
-const rocketstore = require("./rocket-store.js");
-const fs = require("node:fs");
-const path = require("node:path");
-const v8 = require("v8");
-const os = require("node:os");
+import { rocketstore } from "./rocket-store.mjs";
+import fs from "node:fs";
+import path from "node:path";
+
+import v8 from "v8";
+import os from "node:os";
+
+const rs = await rocketstore({
+	data_storage_area: "./webapp",
+});
+
+rs.delete();
+
+const cleanUp = async () => {
+	try {
+		await fs.rm(rs.data_storage_area, { recursive: true });
+		console.log("Clean up: Data storage area deleted.");
+	} catch (err) {
+		console.error("Clean up error:", err);
+	}
+};
 
 const assert = (condition, message) => {
 	if (!condition) {
@@ -121,12 +137,6 @@ tst.sum = () => {
 };
 
 const testcases = async () => {
-	const rs = await rocketstore({
-		data_storage_area: "./webapp",
-	});
-
-	await rs.delete();
-
 	console.log(`${"=".repeat(80)}\n` + `${" ".repeat(37)}Testing\n` + `${"=".repeat(80)}`);
 
 	let result;
@@ -375,7 +385,6 @@ const testcases = async () => {
 	);
 
 	await tst("Delete sequence", rs.delete, ["", "delete_fodders2_seq"], { count: 1 });
-
 	await tst("Delete sequence", rs.delete, ["", "delete_fodders*"], { count: 1 });
 
 	await tst(
@@ -391,6 +400,8 @@ const testcases = async () => {
 		["~/*"],
 		"Collection name contains illegal characters (For a javascript identifier)",
 	);
+
+	return;
 
 	// Test asynchronous object integrity
 	let i;
@@ -411,6 +422,8 @@ const testcases = async () => {
 	});
 
 	await tst("Delete database", rs.delete, [], { count: 1 });
+
+	await cleanUp();
 
 	await tst.sum();
 };

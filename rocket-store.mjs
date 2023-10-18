@@ -32,18 +32,18 @@
 
 \*============================================================================*/
 
-const fs = require("node:fs");
-const path = require("node:path");
-const os = require("node:os");
-const Buffer = require("node:buffer").Buffer;
-const globToRegExp = require("glob-to-regexp");
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
+import { Buffer } from "node:buffer";
+import globToRegExp from "glob-to-regexp";
 
-const rocketstore = async (set_option) => {
+export const rocketstore = async (set_option) => {
 	if (typeof set_option !== "undefined") await rocketstore.options(set_option);
 	return rocketstore;
 };
 
-module.exports = exports = rocketstore;
+export default rocketstore;
 
 // Get options
 rocketstore._ORDER = 0x01;
@@ -111,7 +111,7 @@ rocketstore.post = async (collection, key, record, flags) => {
 	let fileName = path.join(dirToWrite, path.sep, key);
 
 	if (rocketstore.data_format & rocketstore._FORMAT_JSON) {
-		if (!fs.existsSync(fileName)) fs.mkdirSync(dirToWrite, { recursive: true });
+		if (!fs.existsSync(fileName)) fs.mkdirSync(dirToWrite, { recursive: true, mode: 0o777 });
 
 		const data = new Uint8Array(Buffer.from(JSON.stringify(record)));
 		await fs.promises.writeFile(fileName, data).catch((err) => {
@@ -163,7 +163,9 @@ rocketstore.get = async (collection, key, flags, min_time, max_time) => {
 	key = fileNameWash("" + (key || "")).replace(/[*]{2,}/g, "*", true); // remove globstars **
 
 	// Prepare search
-	let scanDir = path.join(rocketstore.data_storage_area, path.sep, collection ? collection + path.sep : "");
+	let scanDir = path.normalize(
+		path.join(rocketstore.data_storage_area, path.sep, collection ? collection + path.sep : ""),
+	);
 	let wildcard = key.indexOf("*") > -1 || key.indexOf("?") > -1 || !key.length;
 
 	if (wildcard && !(flags & rocketstore._DELETE && !key)) {
@@ -462,7 +464,7 @@ rocketstore.options = async (set_option) => {
 				throwIfNoEntry: false,
 			});
 
-			if (!status) fs.mkdirSync(rocketstore.data_storage_area, { mode: 0o775 });
+			if (!status) fs.mkdirSync(rocketstore.data_storage_area, { recursive: true, mode: 0o775 });
 		} catch (err) {
 			throw new Error(`Unable to create data storage directory '${rocketstore.data_storage_area}': `, err);
 		}

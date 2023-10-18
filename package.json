@@ -1,43 +1,49 @@
 {
-  "name": "rocket-store",
-  "version": "0.10.8",
-  "description": "A simple, super fast and yet powerfull flat file database ",
-  "main": "rocket-store.js",
-  "scripts": {
-    "test": "test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/paragi/rocket-store-node.git"
-  },
-  "keywords": [
-    "storage",
-    "database",
-    "key",
-    "value",
-    "store",
-    "key-value",
-    "flat",
-    "file",
-    "flat-file",
-    "file-files",
-    "flat file",
-    "filebase",
-    "database",
-    "document",
-    "record",
-    "serverless",
-    "collection",
-    "fast"
-  ],
-  "author": "Simon Rigét",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/paragi/rocket-store-node/issues"
-  },
-  "homepage": "https://github.com/paragi/rocket-store-node#readme",
-  "dependencies": {
-    "fs-extra": ">8.0",
-    "glob-to-regexp": ">0.4.0"
-   }
+	"name": "rocket-store",
+	"version": "0.10.9",
+	"description": "A simple, super fast and yet powerfull flat file database.",
+	"main": "rocket-store.js",
+	"scripts": {
+		"test": "test"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/paragi/rocket-store-node.git"
+	},
+	"keywords": [
+		"storage",
+		"database",
+		"key",
+		"value",
+		"store",
+		"key-value",
+		"flat",
+		"file",
+		"flat-file",
+		"file-files",
+		"flat file",
+		"filebase",
+		"database",
+		"document",
+		"record",
+		"serverless",
+		"collection",
+		"fast"
+	],
+	"author": "Simon Rigét",
+	"contributors": [
+		"Anton Sychev <anton@sychev.xyz> [https://sychev.xyz]"
+	],
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/paragi/rocket-store-node/issues"
+	},
+	"homepage": "https://github.com/paragi/rocket-store-node#readme",
+	"dependencies": {
+		"glob-to-regexp": ">0.4.0"
+	},
+	"exports": {
+		"import": "./rocket-store.mjs",
+		"require": "./rocket-store.js"
+	}
 }

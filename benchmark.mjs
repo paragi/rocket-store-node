@@ -46,6 +46,19 @@
   │ Exact random delete               │ 325.7 /sec  │
   └───────────────────────────────────┴─────────────┘
 
+  Bench mark test System: i7 3rd gen on SSD
+  ┌───────────────────────────────────┬───────────────┐
+  │              (index)              │    Values     │
+  ├───────────────────────────────────┼───────────────┤
+  │            Mass insert            │ '11952 /sec'  │
+  │         Exact key search          │ '223714 /sec' │
+  │  Exact ramdom key search no hit   │ '58480 /sec'  │
+  │ Wildcard ramdom key search 2 hits │  '157 /sec'   │
+  │ Wildcard ramdom key search no hit │  '168 /sec'   │
+  │   Wildcard ramdom delete 2 hits   │  '153 /sec'   │
+  │        Exact random delete        │  '1538 /sec'  │
+  └───────────────────────────────────┴───────────────┘
+
   PHP on Raspbarry PI Zero
   ┌───────────────────────────────────┬─────────────┐
   │ Mass insert                       │    532 /sec │
@@ -81,12 +94,18 @@
   └───────────────────────────────────┴─────────────┘
 
 \*============================================================================*/
-const rs = require("./rocket-store.js");
-const fs = require("fs-extra");
+
+import { rocketstore } from "./rocket-store.mjs";
+import fs from "node:fs";
+
+const rs = await rocketstore({
+	data_storage_area: "./webapp",
+	data_format: rocketstore._FORMAT_JSON,
+});
 
 const data_create = true;
 const data_delete = false;
-var data_size = 100000;
+const data_size = 100000;
 
 const record = [
 	{
@@ -121,54 +140,58 @@ const record = [
 ];
 
 const benchmark = [];
-var start;
 
 console.log("rund?", 1000 / (51023 / 1000));
 
-function sampleStart(title) {
-	console.log(title);
-	start = Date.now();
-	console.time("Process time");
-}
+const sampleStart = (title) => {
+	const start = Date.now();
+	return start;
+};
 
-function sampleStop(title, count) {
-	end = Date.now();
-	console.timeEnd("Process time");
+const sampleStop = (title, start, count) => {
+	const end = Date.now();
 	if (!count) count = 1;
-	let sample_time = (1.0 * count) / ((end - start) / 1000);
-	if (sample_time < 100) benchmark[title] = `${Math.round(sample_time * 100) / 100} /sec`;
-	else benchmark[title] = `${Math.round(sample_time)} /sec`;
+
+	const sample_time = (1.0 * count) / ((Number(end) - Number(start)) / 1000);
+
+	if (sample_time < 100) {
+		benchmark[title] = `${Math.round(Number(sample_time) * 100) / 100} /sec`;
+	} else {
+		benchmark[title] = `${Math.round(Number(sample_time))} /sec`;
+	}
 
 	if (typeof console.table !== "undefined") {
 		let out = {};
 		out[title] = benchmark[title];
 		console.table(out);
 	} else console.log(benchmark[title]);
-}
+};
 
-function sampleEnd() {
+const sampleEnd = () => {
 	if (typeof console.table !== "undefined") console.table(benchmark);
 	else console.log(benchmark);
-}
+};
 
 (async () => {
 	try {
-		var start, end;
-		var stack1 = [];
-		var stack2 = [];
+		let start = Date.now();
+		let test_name; // Declarar test_name aquí
+		let stack1 = [];
+		let stack2 = [];
 		const collection = "person";
 
 		console.log("Collection dir:", rs.data_storage_area + collection);
-		console.log("Bench mark test", "System: i7 3rd gen on SSD");
+		console.log("Bench mark test System: i7 3rd gen on SSD");
 
 		/*===========================================================================*/
 
 		if (data_create) {
 			test_name = "Mass insert";
 
-			await fs.remove(rs.data_storage_area);
+			// Eliminar directorio de almacenamiento si existe
+			fs.rmSync(rs.data_storage_area, { recursive: true, force: true });
 
-			sampleStart(test_name);
+			start = sampleStart(test_name);
 			console.log(`Creating ${data_size} test files. Please wait`);
 
 			for (let i = 0; i < data_size / 10; i++) {
@@ -184,13 +207,13 @@ function sampleEnd() {
 				stack1 = [];
 			}
 
-			sampleStop(test_name, data_size);
+			sampleStop(test_name, start, data_size);
 		}
 
 		/*===========================================================================*/
 
 		test_name = "Exact key search";
-		sampleStart(test_name);
+		start = sampleStart(test_name);
 
 		for (let i = 0; i < data_size / 10; i++) {
 			for (let ii = 0; ii < 20; ii++, i++) stack1[stack1.length] = rs.get(collection, `${i}-1-Adam Smith`);
@@ -200,12 +223,13 @@ function sampleEnd() {
 			if (stack1.length > 0) console.log(await Promise.all(stack1));
 			stack1 = [];
 		}
-		sampleStop(test_name, data_size);
+
+		sampleStop(test_name, start, data_size);
 
 		/*===========================================================================*/
 
 		test_name = "Exact ramdom key search no hit";
-		sampleStart(test_name);
+		start = sampleStart(test_name);
 
 		for (let i = 0; i < data_size / 10; i++) {
 			for (let ii = 0; ii < 20; ii++, i++) stack1[stack1.length] = rs.get(collection, `${i}-1-Adam SmithX`);
@@ -215,7 +239,7 @@ function sampleEnd() {
 			if (stack1.length > 0) await Promise.all(stack1);
 			stack1 = [];
 		}
-		sampleStop(test_name, data_size / 10);
+		sampleStop(test_name, start, data_size / 10);
 
 		/*===========================================================================*/
 
@@ -223,7 +247,8 @@ function sampleEnd() {
 		await rs.get(collection, `2-?-*Canoly`);
 
 		test_name = "Wildcard ramdom key search 2 hits";
-		sampleStart(test_name);
+
+		start = sampleStart(test_name);
 
 		for (let i = 0; i < 40; i++) {
 			for (let ii = 0; ii < 20; ii++, i++)
@@ -237,12 +262,12 @@ function sampleEnd() {
 			stack1 = [];
 		}
 
-		sampleStop(test_name, 41);
+		sampleStop(test_name, start, 41);
 
 		/*===========================================================================*/
 
 		test_name = "Wildcard ramdom key search no hit";
-		sampleStart(test_name);
+		start = sampleStart(test_name);
 
 		for (let i = 0; i < 40; i++) {
 			for (let ii = 0; ii < 20; ii++, i++)
@@ -256,12 +281,13 @@ function sampleEnd() {
 			if (stack1.length > 0) await Promise.all(stack1);
 			stack1 = [];
 		}
-		sampleStop(test_name, 40);
+
+		sampleStop(test_name, start, 40);
 
 		/*===========================================================================*/
 
 		test_name = "Wildcard ramdom delete 2 hits";
-		sampleStart(test_name);
+		start = sampleStart(test_name);
 
 		for (let i = 0; i < 100; i++) {
 			for (let ii = 0; ii < 20; ii++, i++)
@@ -275,12 +301,13 @@ function sampleEnd() {
 			if (stack1.length > 0) await Promise.all(stack1);
 			stack1 = [];
 		}
-		sampleStop(test_name, 100);
+
+		sampleStop(test_name, start, 100);
 
 		/*===========================================================================*/
 
 		test_name = "Exact random delete";
-		sampleStart(test_name);
+		start = sampleStart(test_name);
 
 		for (let i = 0; i < 100; i++) {
 			for (let ii = 0; ii < 5; ii++, i++)
@@ -294,75 +321,19 @@ function sampleEnd() {
 			if (stack1.length > 0) await Promise.all(stack1);
 			stack1 = [];
 		}
-		sampleStop(test_name, 100);
+
+		sampleStop(test_name, start, 100);
 
 		/*===========================================================================*/
 
 		sampleEnd();
 
-		if (data_delete && false) {
-			console.time("Mass delete:");
-			console.log("Deleting test data if any");
-			await fs.remove(rs.data_storage_area);
-			console.timeEnd("Mass delete:");
-		}
+		console.time("Mass delete:");
+		console.log("Deleting test data if any");
+		// Eliminar directorio de almacenamiento si existe
+		fs.rmSync(rs.data_storage_area, { recursive: true, force: true });
+		console.timeEnd("Mass delete:");
 	} catch (err) {
 		console.error("some err:", err);
 	}
 })();
-
-/*
-
-
-if($delete){
-  echo "Wildcard key delete 2 hits: ";
-
-  $id = 1;
-  $ts = microtime(true);
-
-  for($c = 0; $c<5; $c++){
-    $result = $rs->delete($collection, intval(substr(rand(),-5))  . "?-Adam Smith");
-    if(!empty($result['error']) || $result['count'] == 0){
-      echo "Failed: ";
-      print_r($result);
-      exit;
-    }
-  }
-
-  $c--;
-  echo $c / (microtime(true) - $ts) ."/sec.\n";
-}
-
-if($delete){
-  echo "Excat key delete 1 hits: ";
-
-  $id = 1;
-  $ts = microtime(true);
-
-  for($c = 0; $c<5; $c++){
-    $result = $rs->delete($collection, intval(substr(rand(),-5))  . "6-Adam Smith");
-    if(!empty($result['error']) || $result['count'] == 0){
-      echo "Failed: ";
-      print_r($result);
-      exit;
-    }
-  }
-
-  $c--;
-  echo $c / (microtime(true) - $ts) ."/sec.\n";
-}
-
-if($delete){
-  echo "Delete collection: ";
-
-  $id = 1;
-  $ts = microtime(true);
-  $result = $rs->delete($collection);
-  if(!empty($result['error']) || $result['count'] == 0){
-    echo "Failed: ";
-    print_r($result);
-    exit;
-  }
-  echo $result['count'] / (microtime(true) - $ts) ."/sec.\n";
-}
-*/
