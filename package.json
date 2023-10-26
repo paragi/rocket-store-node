@@ -6,7 +6,9 @@
 	"module": "dist/rocket-store.mjs",
 	"scripts": {
 		"test": "test/test",
-		"build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup"
+		"build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup",
+		"watch": "npm run build -- --watch src",
+		"prepublishOnly": "npm run build"
 	},
 	"files": [
 		"dist/mjs/rocket-store.mjs",
