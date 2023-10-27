@@ -34,6 +34,7 @@ result = await rs.delete("cars","*cede*");
 * Also available for PHP
 * Has a [session store module for express](https://www.npmjs.com/package/express-session-rsdb)
 * Asynchronous mutation safe
+* Can import as Common Js & Module
 
 
 ## Installation
