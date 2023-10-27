@@ -53,11 +53,29 @@
 
 */
 
-const rocketstore = require("./rocket-store.js");
-const fs = require("node:fs");
-const path = require("node:path");
-const v8 = require("v8");
-const os = require("node:os");
+import * as store from "../src/index.js";
+import fs from "node:fs";
+import path from "node:path";
+
+import os from "node:os";
+import { exit } from "node:process";
+
+const testDirPath = "./test/webapp";
+
+const rs = await store.Rocketstore({
+	data_storage_area: testDirPath,
+});
+
+rs.delete();
+
+const cleanUp = async () => {
+	try {
+		await fs.rm(rs.data_storage_area, { recursive: true }, () => {});
+		console.log("Clean up: Data storage area deleted.");
+	} catch (err) {
+		console.error("Clean up error:", err);
+	}
+};
 
 const assert = (condition, message) => {
 	if (!condition) {
@@ -92,6 +110,7 @@ const tst = async (description, func, parameters, expected_result) => {
 	try {
 		result = await func(...parameters);
 	} catch (err) {
+		console.error("[113] test unit error:", err);
 		result = err.message;
 	}
 
@@ -108,6 +127,8 @@ const tst = async (description, func, parameters, expected_result) => {
 		console.group("\x1b[32mOK\x1b[0m: " + description);
 	}
 	console.groupEnd();
+
+	if (failed) exit(1);
 };
 
 tst.tests = 0;
@@ -121,12 +142,6 @@ tst.sum = () => {
 };
 
 const testcases = async () => {
-	const rs = await rocketstore({
-		data_storage_area: "./webapp",
-	});
-
-	await rs.delete();
-
 	console.log(`${"=".repeat(80)}\n` + `${" ".repeat(37)}Testing\n` + `${"=".repeat(80)}`);
 
 	let result;
@@ -148,16 +163,21 @@ const testcases = async () => {
 	await tst(
 		"Set options on main object",
 		rs,
-		[{ data_storage_area: "./rs/sdgdf/", data_format: rs._FORMAT_NATIVE }],
+		[{ data_storage_area: "./rs/sdgdf/", data_format: store._FORMAT_NATIVE }],
 		rs[0],
 	);
 
-	fs.rmSync("./rs", { force: true, recursive: true });
+	fs.rmSync(testDirPath, { force: true, recursive: true });
 
 	await tst(
 		"Set options to unwritable directory",
 		rs.options,
-		[{ data_storage_area: "/rsdb/sdgdf/", data_format: rs._FORMAT_NATIVE }],
+		[
+			{
+				data_storage_area: "/rsdb/sdgdf/",
+				data_format: store._FORMAT_NATIVE,
+			},
+		],
 		"Unable to create data storage directory '/rsdb/sdgdf': ",
 	);
 
@@ -216,11 +236,11 @@ const testcases = async () => {
 	await tst(
 		"Post a record with auto incremented value added to key",
 		rs.post,
-		["person", "key", record, rs._ADD_AUTO_INC],
+		["person", "key", record, store._ADD_AUTO_INC],
 		{ key: "2-key", count: 1 },
 	);
 
-	await tst("Post a record with auto incremented key only", rs.post, ["person", "", record, rs._ADD_AUTO_INC], {
+	await tst("Post a record with auto incremented key only", rs.post, ["person", "", record, store._ADD_AUTO_INC], {
 		key: "3",
 		count: 1,
 	});
@@ -234,11 +254,11 @@ const testcases = async () => {
 		"Collection name contains illegal characters (For a javascript identifier)",
 	);
 
-	await tst("Post a record with GUID added to key", rs.post, ["person", "key-value", record, rs._ADD_GUID], {
+	await tst("Post a record with GUID added to key", rs.post, ["person", "key-value", record, store._ADD_GUID], {
 		count: 1,
 	});
 
-	await tst("Post a record with GUID key only", rs.post, ["person", "", record, rs._ADD_GUID], { count: 1 });
+	await tst("Post a record with GUID key only", rs.post, ["person", "", record, store._ADD_GUID], { count: 1 });
 
 	record["id"]++;
 	await tst(
@@ -310,19 +330,19 @@ const testcases = async () => {
 		return true;
 	}
 
-	result = await rs.get("person", "p?", rs._ORDER);
+	result = await rs.get("person", "p?", store._ORDER);
 
 	await tst("Get order ascending", test_order, [result.record, [1, 2, 3, 4]], true);
 
-	await tst("Get keys", rs.get, ["person", "p?", rs._KEYS], { count: 4 });
+	await tst("Get keys", rs.get, ["person", "p?", store._KEYS], { count: 4 });
 
-	result = await rs.get("person", "p?", rs._ORDER_DESC | rs._KEYS);
+	result = await rs.get("person", "p?", store._ORDER_DESC | store._KEYS);
 	await tst("Get keys in descending order", test_order, [result.key, ["p4", "p3", "p2", "p1"]], true);
 
-	result = await rs.get("person", "p?", rs._ORDER | rs._KEYS);
+	result = await rs.get("person", "p?", store._ORDER | store._KEYS);
 	await tst("Get keys in ascending order", test_order, [result.key, ["p1", "p2", "p3", "p4"]], true);
 
-	await tst("Get record count", rs.get, ["person", "p?", rs._COUNT], { count: 4 });
+	await tst("Get record count", rs.get, ["person", "p?", store._COUNT], { count: 4 });
 
 	await fs.rmSync(`${rs.data_storage_area}/person/p2`, { force: true, recursive: true });
 	await tst("Get manually deleted record where keys != cache", rs.get, ["person", "p?"], {
@@ -331,9 +351,7 @@ const testcases = async () => {
 		result: [1, 4, 3],
 	});
 
-	const p = path.join(`${rs.data_storage_area}/person/22756-Adam Smith`);
-	await tst("Remove one item", fs.promises.unlink, [p], undefined);
-
+	await fs.promises.unlink(`${rs.data_storage_area}/person/22756-Adam Smith`);
 	await tst("Get manually deleted record where keys == cache", rs.get, ["person", "*"], { count: 9 });
 
 	let key = "No Smith";
@@ -375,7 +393,6 @@ const testcases = async () => {
 	);
 
 	await tst("Delete sequence", rs.delete, ["", "delete_fodders2_seq"], { count: 1 });
-
 	await tst("Delete sequence", rs.delete, ["", "delete_fodders*"], { count: 1 });
 
 	await tst(
@@ -404,7 +421,7 @@ const testcases = async () => {
 
 	await Promise.all(promises);
 
-	await tst("Post test asynchronous integrity of records", rs.get, ["async", "", rs._ORDER_ASC], {
+	await tst("Post test asynchronous integrity of records", rs.get, ["async", "", store._ORDER_ASC], {
 		count: 4,
 		key: ["0", "1", "2", "3"],
 		result: [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }],
@@ -412,11 +429,14 @@ const testcases = async () => {
 
 	await tst("Delete database", rs.delete, [], { count: 1 });
 
+	await cleanUp();
 	await tst.sum();
+
+	console.log("-------- DONE --------");
 };
 
 //clean directory before testing
-fs.rmSync("./webapp", { force: true, recursive: true });
+fs.rmSync(testDirPath, { force: true, recursive: true });
 testcases();
 
 let collection = "person";

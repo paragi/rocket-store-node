@@ -162,7 +162,7 @@ await rs.options({
 
 Module
 ```javascript
-import { rocketstore } from "rocket-store";
+import rocketstore from "rocket-store";
 
 const rs = await rocketstore({
 	data_storage_area : "/home/rddb/webapp",
@@ -195,7 +195,7 @@ console.log(result);
 Module
 ```javascript
 // Initialize (Not required)   
-import { rocketstore } from "rocket-store";
+import rocketstore from "rocket-store";
 const rs = await rocketstore()
 
 // POST a record

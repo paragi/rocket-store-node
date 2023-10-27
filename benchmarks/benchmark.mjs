@@ -95,7 +95,7 @@
 
 \*============================================================================*/
 
-import { rocketstore } from "./rocket-store.mjs";
+import { rocketstore } from "../dist/mjs/index.js";
 import fs from "node:fs";
 
 const rs = await rocketstore({

@@ -5,15 +5,19 @@
 Author: <Anton Sychev> (anton at sychev dot xyz) 
 files.js (c) 2023 
 Created:  2023-10-27 03:18:06 
-Desc: file tools
-Docs: documentation
+Desc: file tools lock and unlock
 */
 
+import fs from "node:fs";
+import path from "node:path";
+
 /**
- *
- * @param {*} file
+ *  lock file for writing
+ * @param {string} file
  */
 export const fileLock = async (file) => {
+	console.log("fileLock", file);
+
 	/*
     return new Promise((resolve, reject) => {
 		try {
@@ -38,5 +42,53 @@ export const fileLock = async (file) => {
 			}
 		}
 	});
+    */
+
+	/*
+const do_lock = (name, resolve, reject) => {
+  fs.symlink(
+    rocketstore.data_storage_area + path.sep + name,
+    rocketstore.data_storage_area + path.sep + 'lockfile' + path.sep + name,
+    (err) => {
+      if(err)
+        if(err.code == 'EEXIST')
+          setTimeout(() => {
+            do_lock(name, resolve, reject)
+          }, rocketstore.lock_retry_interval);
+        else
+          reject(err);
+      else
+        resolve();
+    });
+}
+    */
+};
+
+/**
+ *  unlock file after writing
+ * @param {string} file
+ */
+export const fileUnlock = async (file) => {
+	console.log("fileUnlock", file);
+	/*
+    return new Promise((resolve, reject) => {
+		const fileLockName = path.join(rocketstore.data_storage_area, path.sep, "lockfile", name);
+
+		if (!fs.existsSync(fileLockName)) return resolve();
+
+		try {
+			fs.promises.unlink(fileLockName);
+			return resolve();
+		} catch (err) {
+			console.log("410", err);
+			return reject(err);
+		}
+	});
+    */
+
+	/*
+    fs.unlink(rocketstore.data_storage_area + path.sep + 'lockfile' + path.sep + name, (err) => {
+    if (err) console.error(err);
+  });
     */
 };
