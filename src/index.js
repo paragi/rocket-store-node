@@ -387,7 +387,7 @@ Rocketstore.sequence = async (seq_name) => {
 	const fileName = path.join(Rocketstore.data_storage_area, path.sep, name);
 
 	//lock file
-	if (Rocketstore.lock_files) fileLock(fileName);
+	if (Rocketstore.lock_files) await fileLock(Rocketstore.data_storage_area, name, Rocketstore.lock_retry_interval);
 
 	try {
 		const data = await fs.promises.readFile(fileName, "utf8");
@@ -413,7 +413,7 @@ Rocketstore.sequence = async (seq_name) => {
 	}
 
 	//unlock file
-	if (Rocketstore.lock_files) fileUnlock(fileName);
+	if (Rocketstore.lock_files) await fileUnlock(Rocketstore.data_storage_area, name);
 
 	return sequence;
 };

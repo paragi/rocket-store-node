@@ -13,82 +13,54 @@ import path from "node:path";
 
 /**
  *  lock file for writing
+ * @param {string} pathFolder
  * @param {string} file
+ * @param {int} lock_retry_interval
  */
-export const fileLock = async (file) => {
-	console.log("fileLock", file);
-
-	/*
-    return new Promise((resolve, reject) => {
+export const fileLock = async (pathFolder, file, lock_retry_interval = 13) => {
+	console.log("fileLock", pathFolder, file);
+	return new Promise((resolve, reject) => {
 		try {
-			const lockPath = path.join(rocketstore.data_storage_area, path.sep, "lockfile");
-			const status = fs.lstatSync(lockPath, { throwIfNoEntry: false });
-			if (!status) fs.mkdirSync(lockPath);
+			const sourcePath = path.join(pathFolder, path.sep, file);
+			const targetPath = path.join(pathFolder, path.sep, "lockfile", path.sep, file);
 
-			const f = fs.symlinkSync(
-				path.join(rocketstore.data_storage_area, name),
-				path.join(rocketstore.data_storage_area, path.sep, "lockfile", name),
-			);
-			if (!f) reject();
-			return resolve();
+			const status = fs.lstatSync(path.join(pathFolder, path.sep, "lockfile"), { throwIfNoEntry: false });
+			if (!status) fs.mkdirSync(path.join(pathFolder, path.sep, "lockfile"), { recursive: true });
+
+			return fs.promises
+				.symlink(sourcePath, targetPath)
+				.then(() => resolve())
+				.catch((err) => {
+					if (err.code === "EEXIST")
+						setTimeout(async () => {
+							await fileLock(pathFolder, file, lock_retry_interval);
+						}, lock_retry_interval);
+				});
 		} catch (err) {
-			if (err.code === "EEXIST") {
-				setTimeout(() => {
-					do_lock(name);
-				}, rocketstore.lock_retry_interval);
-			} else {
-				console.log("390", err);
-				return reject(err);
-			}
+			console.error("[390] -> filelock -> ", err);
+			return reject();
 		}
 	});
-    */
-
-	/*
-const do_lock = (name, resolve, reject) => {
-  fs.symlink(
-    rocketstore.data_storage_area + path.sep + name,
-    rocketstore.data_storage_area + path.sep + 'lockfile' + path.sep + name,
-    (err) => {
-      if(err)
-        if(err.code == 'EEXIST')
-          setTimeout(() => {
-            do_lock(name, resolve, reject)
-          }, rocketstore.lock_retry_interval);
-        else
-          reject(err);
-      else
-        resolve();
-    });
-}
-    */
 };
 
 /**
  *  unlock file after writing
+ * @param {string} pathFolder
  * @param {string} file
  */
-export const fileUnlock = async (file) => {
-	console.log("fileUnlock", file);
-	/*
-    return new Promise((resolve, reject) => {
-		const fileLockName = path.join(rocketstore.data_storage_area, path.sep, "lockfile", name);
+export const fileUnlock = async (pathFolder, file) => {
+	console.log("fileUnlock", pathFolder, file);
+	return new Promise((resolve, reject) => {
+		const fileLockName = path.join(pathFolder, path.sep, "lockfile", path.sep, file);
 
 		if (!fs.existsSync(fileLockName)) return resolve();
 
 		try {
-			fs.promises.unlink(fileLockName);
+			fs.promises.unlink(fileLockName, { recursive: true });
 			return resolve();
 		} catch (err) {
-			console.log("410", err);
-			return reject(err);
+			console.log("[410] file unlock ->", err);
+			return reject();
 		}
 	});
-    */
-
-	/*
-    fs.unlink(rocketstore.data_storage_area + path.sep + 'lockfile' + path.sep + name, (err) => {
-    if (err) console.error(err);
-  });
-    */
 };

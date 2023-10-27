@@ -1,13 +1,11 @@
 /*===========================================================================*\
   Rocket-store examples
-
-
 \*===========================================================================*/
 
 // Initialize
-import { rocketstore } from "./rocket-store.mjs";
+import * as store from "rocket-store";
 
-const rs = await rocketstore({
+const rs = await store.Rocketstore({
 	data_storage_area: "./webapp",
 	data_format: rocketstore._FORMAT_JSON,
 });

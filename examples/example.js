@@ -5,7 +5,7 @@
 \*===========================================================================*/
 
 // Initialize
-const rs = require("./rocket-store");
+const rs = require("rocket-store");
 
 (async () => {
 	// Change storage area from default ( <tempdir>/rsdb )

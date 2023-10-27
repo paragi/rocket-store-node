@@ -299,7 +299,7 @@ const testcases = async () => {
 
 	await tst("Get a list", rs.get, ["person", "*"], { count: 7 });
 
-	await tst("Get a list of collections and sequences", rs.get, [], { count: 3 });
+	await tst("Get a list of collections and sequences", rs.get, [], { count: 4 });
 
 	await tst("Get list of sequences with wildcard", rs.get, [null, "*_seq"], { count: 2 });
 
@@ -409,7 +409,7 @@ const testcases = async () => {
 		"Collection name contains illegal characters (For a javascript identifier)",
 	);
 
-	// Test asynchronous object integrity
+	// Test asynchronous object integrityGet a list of collections and sequences
 	let i;
 	let obj = {};
 	let promises = [];
