@@ -4,6 +4,7 @@
 [![downloads per month](http://img.shields.io/npm/dm/rocket-store.svg)](https://www.npmjs.org/package/rocket-store)
 [![Issues](http://img.shields.io/github/issues/paragi/rocket-store.svg)]( https://github.com/Paragi/rocket-store/issues )
 [![GitHub pull-requests](https://img.shields.io/github/issues-pr/paragi/rocket-store.svg)](https://GitHub.com/paragi/rocket-store/pull/)
+[![rocket-store-node](https://github.com/paragi/rocket-store-node/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/paragi/rocket-store-node/actions/workflows/npm-publish.yml)
 
 **Using the filesystem as a searchable database.**
 
