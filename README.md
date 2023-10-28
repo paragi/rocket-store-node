@@ -15,11 +15,8 @@ It's packaged in a single file to include, with few dependencies.
 ## Simple to use:
 ```javascript
 result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg:"N3RD"});
-
 result = await rs.get("cars","*",rs._ORDER_DESC);
-
 result = await rs.delete("cars","*cede*");
-
 ```
 
 ## Features:
@@ -49,7 +46,7 @@ result = await rs.delete("cars","*cede*");
 
 Commen JS
 ```js
-const rs = require('rocket-store');
+const rs = require('rocket-store').default;
 ```
 
 Module
@@ -160,7 +157,7 @@ The array can have these options:
 #### Set data storage directory and file format to JSON
 Common JS
 ```javascript
-const rs = require('rocket-store');
+const rs = require('rocket-store').default;
 
 await rs.options({
   data_storage_area : "/home/rddb/webapp",

@@ -3,22 +3,38 @@
 	"version": "0.10.10",
 	"description": "A simple, super fast and yet powerfull flat file database.",
 	"main": "./dist/cjs/index.js",
-	"module": "./dist/mjs/index.js",
-	"type": "module",
+	"module": "./dist/mjs/index.mjs",
 	"scripts": {
 		"test": "node test/test.js",
 		"benchmark": "node benchmark/benchmark.js",
-		"build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+		"fixmjs_internal": "find dist/mjs -name '*.js' -exec sed -i '' 's/\\.js/\\.mjs/g' {} \\;",
+		"fixmjs_rename": "find dist/mjs -name '*.js' -exec bash -c 'mv \"$0\" \"${0%.js}.mjs\"' {} \\;",
+		"build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && npm run fixmjs_internal && npm run fixmjs_rename",
 		"watch": "npm run build -- --watch src"
 	},
 	"files": [
 		"dist",
+		"benchmark",
 		"examples",
+		"test",
 		"LICENSE",
 		"package.json",
 		"README.md",
 		"src"
 	],
+	"exports": {
+		".": {
+			"require": "./dist/cjs/index.js",
+			"import": "./dist/mjs/index.mjs"
+		},
+		"./src/*": "./src/*"
+	},
+	"directories": {
+		"test": "test",
+		"benchmark": "benchmark",
+		"doc": "doc",
+		"example": "examples"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/paragi/rocket-store-node.git"
@@ -63,14 +79,5 @@
 		"rollup": "^1.27.10",
 		"tsc": "^2.0.4",
 		"typescript": "^5.2.2"
-	},
-	"exports": {
-		".": {
-			"import": "./dist/mjs/index.js",
-			"require": "./dist/cjs/index.js"
-		}
-	},
-	"directories": {
-		"test": "test"
 	}
 }
