@@ -15,11 +15,8 @@ It's packaged in a single file to include, with few dependencies.
 ## Simple to use:
 ```javascript
 result = await rs.post("cars","Mercedes",{owner:"Lisa Simpson",reg:"N3RD"});
-
 result = await rs.get("cars","*",rs._ORDER_DESC);
-
 result = await rs.delete("cars","*cede*");
-
 ```
 
 ## Features:
@@ -27,23 +24,35 @@ result = await rs.delete("cars","*cede*");
 * Very reliant
 * Very little footprint.
 * Very flexible.
-* Few dependencies
+* One dependency
 * Works without configuration or setup.
 * Data stored in JSON format
 * Configurable
 * Also available for PHP
 * Has a [session store module for express](https://www.npmjs.com/package/express-session-rsdb)
 * Asynchronous mutation safe
+* Can import as Common Js & Module
 
 
 ## Installation
 
+  Just run:
+
+  ```shell
     npm install rocket-store
+  ```
 
 ## Usages
 
+Commen JS
 ```js
-const rs = require('rocket-store');
+const rs = require('rocket-store').default;
+```
+
+Module
+```js
+import * as store from "rocket-store";
+const rs = await store.Rocketstore();
 ```
 
 Rocket-Store does not require initialization:
@@ -54,6 +63,7 @@ Rocket-Store does not require initialization:
 However you can set the storage area and data format to use, with the setOption function, before doing any operation on the data.
 
 ## Basic terminology
+
 Rocket-Store was made to replace a more complex database, in a setting that required a low footprint and high performance.
 
 Rocket-Store is intended to store and retrieve records/documents, organized in collections, using a key.
@@ -145,11 +155,22 @@ Configuration options is an associative array, that can be parsed during require
 The array can have these options:
 
 #### Set data storage directory and file format to JSON
+Common JS
 ```javascript
-const rs = require('rocket-store');
+const rs = require('rocket-store').default;
 
 await rs.options({
   data_storage_area : "/home/rddb/webapp",
+  data_format       : rs._FORMAT_JSON,
+});
+```
+
+Module
+```javascript
+import * as store from "rocket-store";
+
+const rs = await store.Rocketstore({
+	data_storage_area : "/home/rddb/webapp",
   data_format       : rs._FORMAT_JSON,
 });
 ```
@@ -162,9 +183,25 @@ await rs.options({
 
 ## Examples
 #### Storing records:
+Common JS
 ```javascript
 // Initialize (Not required)   
 const rs = require('./rocket-store');
+
+// POST a record
+result = await rs.post("cars", "Mercedes_Benz_GT_R", {owner: "Lisa Simpson"});
+
+// GET a record
+result = await rs.get("cars", "*");
+
+console.log(result);
+```
+
+Module
+```javascript
+// Initialize (Not required)   
+import * as store from "rocket-store";
+const rs = await store.Rocketstore();
 
 // POST a record
 result = await rs.post("cars", "Mercedes_Benz_GT_R", {owner: "Lisa Simpson"});
@@ -299,7 +336,7 @@ result = await rs.get("cars", "*BMW*");
 
 ##### Get list ordered by alphabetically descending keys
 ```javascript
-result = await rs.get("cars", "*BMW*",rs._ORDER_DESC);
+result = await rs.get("cars", "*BMW*", rs._ORDER_DESC);
 ```
 
 ##### Get list of collections and sequences
@@ -341,10 +378,26 @@ Both solutions will hopefully be changed, as node matures.
 
 Benchmarks are performed with 1 million records in in a single collection.
 
+***Before rewrite***
 |System | Mass insert | exact key search | wildcard search | no hit | delete |
 |---|---|---|---|---|---|
 |Debian, i7 3rd gen, SSD |69000/sec.|87000/sec.|14,6/sec.|123000/sec.|525/sec.
 |Raspbarry Pi Zero |561/sec.|96/sec.|0.27/sec.|147/sec.|10.3/sec.|
+
+***After rewrite***
+Bench mark test System: i7 3rd gen on SSD
+  |(index)|Values|
+  |---|---|
+  |Mass insert|10697 /sec|
+  |Exact key search|79745 /sec|
+  |Exact ramdom key search no hit|26042 /sec|
+  |Wildcard ramdom key search 2 hits|112 /sec|
+  │Wildcard ramdom delete 2 hits|109 /sec|
+  |Wildcard ramdom key search no hit|152 /sec|
+  |Exact random delete|1563 /sec|
+
+Deleting test data if any
+ Mass delete:: 11.377s
 
 
 ---

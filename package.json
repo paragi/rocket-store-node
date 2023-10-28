@@ -1,43 +1,83 @@
 {
-  "name": "rocket-store",
-  "version": "0.10.8",
-  "description": "A simple, super fast and yet powerfull flat file database ",
-  "main": "rocket-store.js",
-  "scripts": {
-    "test": "test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/paragi/rocket-store-node.git"
-  },
-  "keywords": [
-    "storage",
-    "database",
-    "key",
-    "value",
-    "store",
-    "key-value",
-    "flat",
-    "file",
-    "flat-file",
-    "file-files",
-    "flat file",
-    "filebase",
-    "database",
-    "document",
-    "record",
-    "serverless",
-    "collection",
-    "fast"
-  ],
-  "author": "Simon Rigét",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/paragi/rocket-store-node/issues"
-  },
-  "homepage": "https://github.com/paragi/rocket-store-node#readme",
-  "dependencies": {
-    "fs-extra": ">8.0",
-    "glob-to-regexp": ">0.4.0"
-   }
+	"name": "rocket-store",
+	"version": "0.10.10",
+	"description": "A simple, super fast and yet powerfull flat file database.",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/mjs/index.mjs",
+	"scripts": {
+		"test": "node test/test.js",
+		"benchmark": "node benchmark/benchmark.js",
+		"fixmjs_internal": "find dist/mjs -name '*.js' -exec sed -i '' 's/\\.js/\\.mjs/g' {} \\;",
+		"fixmjs_rename": "find dist/mjs -name '*.js' -exec bash -c 'mv \"$0\" \"${0%.js}.mjs\"' {} \\;",
+		"build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && npm run fixmjs_internal && npm run fixmjs_rename",
+		"watch": "npm run build -- --watch src"
+	},
+	"files": [
+		"dist",
+		"benchmark",
+		"examples",
+		"test",
+		"LICENSE",
+		"package.json",
+		"README.md",
+		"src"
+	],
+	"exports": {
+		".": {
+			"require": "./dist/cjs/index.js",
+			"import": "./dist/mjs/index.mjs"
+		},
+		"./src/*": "./src/*"
+	},
+	"directories": {
+		"test": "test",
+		"benchmark": "benchmark",
+		"doc": "doc",
+		"example": "examples"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/paragi/rocket-store-node.git"
+	},
+	"keywords": [
+		"storage",
+		"database",
+		"key",
+		"value",
+		"store",
+		"key-value",
+		"flat",
+		"file",
+		"flat-file",
+		"file-files",
+		"flat file",
+		"filebase",
+		"database",
+		"document",
+		"record",
+		"serverless",
+		"collection",
+		"fast"
+	],
+	"author": "Simon Rigét",
+	"contributors": [
+		"Anton Sychev <anton@sychev.xyz> [https://sychev.xyz]"
+	],
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/paragi/rocket-store-node/issues"
+	},
+	"homepage": "https://github.com/paragi/rocket-store-node#readme",
+	"dependencies": {
+		"glob-to-regexp": ">0.4.0"
+	},
+	"peerDependencies": {
+		"rollup": ">=0.66.0 <2"
+	},
+	"devDependencies": {
+		"jest": "^29.7.0",
+		"rollup": "^1.27.10",
+		"tsc": "^2.0.4",
+		"typescript": "^5.2.2"
+	}
 }
