@@ -34,6 +34,7 @@ result = await rs.delete("cars","*cede*");
 * Also available for PHP
 * Has a [session store module for express](https://www.npmjs.com/package/express-session-rsdb)
 * Asynchronous mutation safe
+* Can import as Common Js & Module
 
 
 ## Installation
@@ -46,8 +47,15 @@ result = await rs.delete("cars","*cede*");
 
 ## Usages
 
+Commen JS
 ```js
 const rs = require('rocket-store');
+```
+
+Module
+```js
+import * as store from "rocket-store";
+const rs = await store.Rocketstore();
 ```
 
 Rocket-Store does not require initialization:
@@ -162,9 +170,9 @@ await rs.options({
 
 Module
 ```javascript
-import { rocketstore } from "rocket-store";
+import * as store from "rocket-store";
 
-const rs = await rocketstore({
+const rs = await store.Rocketstore({
 	data_storage_area : "/home/rddb/webapp",
   data_format       : rs._FORMAT_JSON,
 });
@@ -195,8 +203,8 @@ console.log(result);
 Module
 ```javascript
 // Initialize (Not required)   
-import { rocketstore } from "rocket-store";
-const rs = await rocketstore()
+import * as store from "rocket-store";
+const rs = await store.Rocketstore();
 
 // POST a record
 result = await rs.post("cars", "Mercedes_Benz_GT_R", {owner: "Lisa Simpson"});
@@ -373,10 +381,26 @@ Both solutions will hopefully be changed, as node matures.
 
 Benchmarks are performed with 1 million records in in a single collection.
 
+***Before rewrite***
 |System | Mass insert | exact key search | wildcard search | no hit | delete |
 |---|---|---|---|---|---|
 |Debian, i7 3rd gen, SSD |69000/sec.|87000/sec.|14,6/sec.|123000/sec.|525/sec.
 |Raspbarry Pi Zero |561/sec.|96/sec.|0.27/sec.|147/sec.|10.3/sec.|
+
+***After rewrite***
+Bench mark test System: i7 3rd gen on SSD
+  |(index)|Values|
+  |---|---|
+  |Mass insert|10697 /sec|
+  |Exact key search|79745 /sec|
+  |Exact ramdom key search no hit|26042 /sec|
+  |Wildcard ramdom key search 2 hits|112 /sec|
+  │Wildcard ramdom delete 2 hits|109 /sec|
+  |Wildcard ramdom key search no hit|152 /sec|
+  |Exact random delete|1563 /sec|
+
+Deleting test data if any
+ Mass delete:: 11.377s
 
 
 ---

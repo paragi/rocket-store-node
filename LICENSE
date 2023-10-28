@@ -2,29 +2,23 @@
 
   A very simple and yet powerful file storage.
 
-  (c) Paragi 2017, Simon Riget.
+  Copyright (c) Paragi 2017, Simon Riget.
 
-  License MIT
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
-  Terminology:
-  Rocketstore was made to replace a more complex database, in a setting that didn't quite need that level of functionality.
-  Rocketstore is intended to store and retrieve records/documents, organized in collections, using a key.
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-  to translate between rocketstore sql and file system terms:
-  +------------------+---------------+------------------------+
-  | storage area     |  database     |  data directory root   |
-  +------------------+---------------+------------------------+
-  | collection       |  table        |  directory             |
-  +------------------+---------------+------------------------+
-  | key              |  key          |  file name             |
-  +------------------+---------------+------------------------+
-  | record           |  row          |  file                  |
-  +------------------+---------------+------------------------+
-
-  File system issue
-  In this node version, a compromise is struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, that is able to filter a directory search on a low level. Instead, an array of all entries is read.
-  This consumes a lot of memory with a large database. There is no avoiding that, short of improving the node file system library. This is beyond my intentions, at this time. I hope it will be remedied by the node core team.
-  Instead in this module I have accepted the consumption of memory, but as a compromise, strive to reuse it to improve speed on key searching by keeping the read keys in memory between searched (keyCache).
-  keyCache has to be maintained in the post and get methods.
-
-  A drawback of this is that collection names are restricted to valid variable names as well as directory names.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

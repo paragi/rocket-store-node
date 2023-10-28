@@ -59,6 +59,21 @@
   │        Exact random delete        │  '1538 /sec'  │
   └───────────────────────────────────┴───────────────┘
 
+  Bench mark test System: i7 3rd gen on SSD (after rewrite)
+  ┌───────────────────────────────────┬──────────────┐
+  │              (index)              │    Values    │
+  ├───────────────────────────────────┼──────────────┤
+  │            Mass insert            │ '10697 /sec' │
+  │         Exact key search          │ '79745 /sec' │
+  │  Exact ramdom key search no hit   │ '26042 /sec' │
+  │ Wildcard ramdom key search 2 hits │  '112 /sec'  │
+  │ Wildcard ramdom key search no hit │  '152 /sec'  │
+  │   Wildcard ramdom delete 2 hits   │  '109 /sec'  │
+  │        Exact random delete        │ '1563 /sec'  │
+  └───────────────────────────────────┴──────────────┘
+  Deleting test data if any
+  Mass delete:: 11.377s
+
   PHP on Raspbarry PI Zero
   ┌───────────────────────────────────┬─────────────┐
   │ Mass insert                       │    532 /sec │
@@ -95,12 +110,12 @@
 
 \*============================================================================*/
 
-import { rocketstore } from "./rocket-store.mjs";
+import * as store from "../src/index.js";
 import fs from "node:fs";
 
-const rs = await rocketstore({
+const rs = await store.Rocketstore({
 	data_storage_area: "./webapp",
-	data_format: rocketstore._FORMAT_JSON,
+	data_format: store._FORMAT_JSON,
 });
 
 const data_create = true;
