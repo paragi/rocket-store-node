@@ -1,4 +1,4 @@
-name: Node.js Rocket-store-node
+name: rocket-store-node
 
 on:
   release:
