@@ -1,6 +1,6 @@
 {
 	"name": "rocket-store",
-	"version": "0.10.11",
+	"version": "0.10.12",
 	"description": "A simple, super fast and yet powerfull flat file database.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/mjs/index.mjs",
