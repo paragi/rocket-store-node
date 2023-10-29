@@ -1,4 +1,4 @@
-name: rocket-store-node
+name: rocket-store
 
 on:
   push:
