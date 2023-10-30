@@ -13,8 +13,7 @@
 		"watch": "npm run build -- --watch src"
 	},
 	"files": [
-		"dist/mjs/*",
-		"dist/cjs/*",
+		"dist",
 		"benchmark",
 		"examples",
 		"test",
