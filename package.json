@@ -13,14 +13,14 @@
 		"watch": "npm run build -- --watch src"
 	},
 	"files": [
-		"dist",
+		"dist/mjs/*",
+		"dist/cjs/*",
 		"benchmark",
 		"examples",
 		"test",
 		"LICENSE",
 		"package.json",
-		"README.md",
-		"src"
+		"README.md"
 	],
 	"exports": {
 		".": {
@@ -34,7 +34,8 @@
 		"benchmark": "benchmark",
 		"doc": "doc",
 		"example": "examples",
-		"dist": "dist"
+		"src": "src",
+		"dist": "dist/*"
 	},
 	"repository": {
 		"type": "git",
