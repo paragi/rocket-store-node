@@ -1,10 +1,7 @@
 /*
-█▀ █▄█ █▀▀ █░█ █▀▀ █░█
-▄█ ░█░ █▄▄ █▀█ ██▄ ▀▄▀
-
 Author: Simon Riget
 Contributor: <Anton Sychev> (anton at sychev dot xyz) 
-index.js (c) 2023 
+index.js (c) 2017 - 2023 
 Created:  2023-10-26 02:43:48 
 Desc: Rocket Store - A very simple and yet powerful file storage.
 License: 

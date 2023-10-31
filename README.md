@@ -408,11 +408,30 @@ Deleting test data if any
 * Code should look good and compact, and be covered by a test case or example.
 * Please don't change the formatting style laid out, without a good reason. I know its not the most common standard, but its rather efficient one.
 
+---
+## Build before publish
+
+First run `npm install typescript -g` after thaht run `npm run build`.
 
 ---
 ## Updates
+
+0.10.11 - 0.10.14
+- Config workflow
+- Bug fixes 
+- Update Docs
+- Auto compile before publish code
+
+0.10.10
+- Code rewrite updating it to the latest standard, removing a dependency.
+- Now it can be imported as CommonJS and as Module in your project.
+
+0.10.9
+- removed remove fs-extra module
+
 0.10.8
 - removed unneeded module sanitise-filename
+
 0.10.7 
 - Bug fix: Wildcard search on windows OS failed to find valid keys.
 

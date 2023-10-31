@@ -1,14 +1,13 @@
-/*============================================================================*\
-  Rocket store - test suite
-
-  (c) Simon Riget 2017
-  License MIT
-
-  The number of concurent tasks might need tweeking to the individual system, to optimice persormance.
-
-  This benchmark was tweeked for performance on an ordinary desk-top PC. But for comparability, the same settings are used on other devices.
-
-
+/*
+Author: Simon Riget
+Contributor: <Anton Sychev> (anton at sychev dot xyz) 
+index.js (c) 2017 - 2023 
+Created:  2023-10-26 02:43:48 
+Desc: The number of concurent tasks might need tweeking to the individual system, to optimice persormance.
+  	  This benchmark was tweeked for performance on an ordinary desk-top PC. But for comparability, the same settings are used on other devices.
+License: 
+    * MIT: (c) Paragi 2017, Simon Riget.
+Smaples:
   Some results:
 
   PHP on i7 3rd gen on SSD
@@ -107,8 +106,7 @@
   ├───────────────────────────────────┼─────────────┤
   │ Exact random delete               │   10.3 /sec │
   └───────────────────────────────────┴─────────────┘
-
-\*============================================================================*/
+*/
 
 import * as store from "../src/index.js";
 import fs from "node:fs";
