@@ -1,6 +1,12 @@
-/*===========================================================================*\
-  Rocket-store examples
-\*===========================================================================*/
+/*
+Author: Simon Riget
+Contributor: <Anton Sychev> (anton at sychev dot xyz) 
+index.js (c) 2017 - 2023 
+Created:  2023-10-28 02:12:56 
+Desc: Rocket-store examples as module
+License: 
+    * MIT: (c) Paragi 2017, Simon Riget.
+*/
 
 // Initialize
 import * as store from "rocket-store";
@@ -12,20 +18,12 @@ const rs = await store.Rocketstore({
 
 (async () => {
 	// Change storage area from default ( <tempdir>/rsdb )
-	console.log(
-		"POST a record:\n",
-		await rs.post("cars", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" })
-	);
+	console.log("POST a record:\n", await rs.post("cars", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" }));
 	console.log("GET a record:\n", await rs.get("cars", ""));
 	console.log("-----");
 	console.log("POST 3 records");
 	// Post 3 records
-	await rs.post(
-		"cars",
-		"BMW_740li",
-		{ owner: "Greg Onslow" },
-		rs._ADD_AUTO_INC
-	);
+	await rs.post("cars", "BMW_740li", { owner: "Greg Onslow" }, rs._ADD_AUTO_INC);
 	await rs.post("cars", "BMW_740li", { owner: "Sam Wise" }, rs._ADD_AUTO_INC);
 	await rs.post("cars", "BMW_740li", { owner: "Bill Bo" }, rs._ADD_AUTO_INC);
 	console.log("Get all records:\n", await rs.get("cars", "*"));
@@ -51,15 +49,9 @@ const rs = await store.Rocketstore({
 	if (promises.length > 0) await Promise.all(promises);
 
 	console.log("Get BMW's:\n", await rs.get("cars", "*BMW*"));
-	console.log(
-		"Get list ordered by alphabetically descending keys:\n",
-		await rs.get("cars", "", rs._ORDER_DESC)
-	);
+	console.log("Get list ordered by alphabetically descending keys:\n", await rs.get("cars", "", rs._ORDER_DESC));
 
-	console.log(
-		"Delete all Mercedes's:\n",
-		await rs.delete("cars", "*Mercedes*")
-	);
+	console.log("Delete all Mercedes's:\n", await rs.delete("cars", "*Mercedes*"));
 	console.log("-----");
 	console.log("Return all cars");
 	console.log(await rs.get("cars", "*"));

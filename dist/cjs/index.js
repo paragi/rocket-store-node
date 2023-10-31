@@ -1,11 +1,8 @@
 "use strict";
 /*
-█▀ █▄█ █▀▀ █░█ █▀▀ █░█
-▄█ ░█░ █▄▄ █▀█ ██▄ ▀▄▀
-
 Author: Simon Riget
 Contributor: <Anton Sychev> (anton at sychev dot xyz)
-index.js (c) 2023
+index.js (c) 2017 - 2023
 Created:  2023-10-26 02:43:48
 Desc: Rocket Store - A very simple and yet powerful file storage.
 License:
@@ -61,7 +58,6 @@ const glob_to_regexp_1 = __importDefault(require("glob-to-regexp"));
 const filesValidators_js_1 = require("./utils/filesValidators.js");
 const files_js_1 = require("./utils/files.js");
 //TODO: max items per folder, split into subfolders
-//TOOD: implement in langchain
 const constants_js_1 = require("./constants.js");
 const Rocketstore = (set_option) => __awaiter(void 0, void 0, void 0, function* () {
     if (typeof set_option !== "undefined")

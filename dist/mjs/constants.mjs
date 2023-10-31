@@ -1,12 +1,11 @@
 /*
-█▀ █▄█ █▀▀ █░█ █▀▀ █░█
-▄█ ░█░ █▄▄ █▀█ ██▄ ▀▄▀
-
-Author: <Anton Sychev> (anton at sychev dot xyz)
-constants.mjs (c) 2023
+Author: Simon Riget
+Contributor: <Anton Sychev> (anton at sychev dot xyz)
+index.mjs (c) 2017 - 2023
 Created:  2023-10-28 02:12:56
-Desc: constants variables
-Docs: documentation
+Desc: Constants variables
+License:
+    * MIT: (c) Paragi 2017, Simon Riget.
 */
 // Get options
 export const _ORDER = 0x01;

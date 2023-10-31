@@ -1,13 +1,12 @@
 "use strict";
 /*
-█▀ █▄█ █▀▀ █░█ █▀▀ █░█
-▄█ ░█░ █▄▄ █▀█ ██▄ ▀▄▀
-
-Author: <Anton Sychev> (anton at sychev dot xyz)
-constants.js (c) 2023
+Author: Simon Riget
+Contributor: <Anton Sychev> (anton at sychev dot xyz)
+index.js (c) 2017 - 2023
 Created:  2023-10-28 02:12:56
-Desc: constants variables
-Docs: documentation
+Desc: Constants variables
+License:
+    * MIT: (c) Paragi 2017, Simon Riget.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports._FORMAT_PHP = exports._FORMAT_XML = exports._FORMAT_NATIVE = exports._FORMAT_JSON = exports._ADD_GUID = exports._ADD_AUTO_INC = exports._COUNT = exports._KEYS = exports._DELETE = exports._LOCK = exports._ORDERBY_TIME = exports._ORDER_DESC = exports._ORDER = void 0;

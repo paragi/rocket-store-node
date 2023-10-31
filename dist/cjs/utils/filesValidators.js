@@ -1,12 +1,12 @@
 "use strict";
 /*
-█▀ █▄█ █▀▀ █░█ █▀▀ █░█
-▄█ ░█░ █▄▄ █▀█ ██▄ ▀▄▀
-
-Author: <Anton Sychev> (anton at sychev dot xyz)
-files.js (c) 2023
-Created:  2023-10-27 02:00:18
-Desc: name validator and file name corrections
+Author: Simon Riget
+Contributor: <Anton Sychev> (anton at sychev dot xyz)
+index.js (c) 2017 - 2023
+Created:  2023-10-28 02:12:56
+Desc: Name validator and file name corrections
+License:
+    * MIT: (c) Paragi 2017, Simon Riget.
 */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
