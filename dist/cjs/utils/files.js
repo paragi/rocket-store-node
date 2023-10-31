@@ -1,12 +1,12 @@
 "use strict";
 /*
-█▀ █▄█ █▀▀ █░█ █▀▀ █░█
-▄█ ░█░ █▄▄ █▀█ ██▄ ▀▄▀
-
-Author: <Anton Sychev> (anton at sychev dot xyz)
-files.js (c) 2023
-Created:  2023-10-27 03:18:06
-Desc: file tools lock and unlock
+Author: Simon Riget
+Contributor: <Anton Sychev> (anton at sychev dot xyz)
+index.js (c) 2017 - 2023
+Created:  2023-10-28 02:12:56
+Desc: File tools lock and unlock
+License:
+    * MIT: (c) Paragi 2017, Simon Riget.
 */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }

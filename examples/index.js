@@ -1,7 +1,12 @@
-/*===========================================================================*\
-  Rocket-store examples
-\*===========================================================================*/
-
+/*
+Author: Simon Riget
+Contributor: <Anton Sychev> (anton at sychev dot xyz) 
+index.js (c) 2017 - 2023 
+Created:  2023-10-28 02:12:56 
+Desc: Rocket-store examples as common js
+License: 
+    * MIT: (c) Paragi 2017, Simon Riget.
+*/
 // Initialize
 const rs = require("rocket-store").default;
 
@@ -14,20 +19,12 @@ const rs = require("rocket-store").default;
 
 	await rs.options(options);
 
-	console.log(
-		"POST a record:\n",
-		await rs.post("cars", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" })
-	);
+	console.log("POST a record:\n", await rs.post("cars", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" }));
 
 	console.log("GET a record:\n", await rs.get("cars", ""));
 
 	// Post 3 records
-	await rs.post(
-		"cars",
-		"BMW_740li",
-		{ owner: "Greg Onslow" },
-		rs._ADD_AUTO_INC
-	);
+	await rs.post("cars", "BMW_740li", { owner: "Greg Onslow" }, rs._ADD_AUTO_INC);
 	await rs.post("cars", "BMW_740li", { owner: "Sam Wise" }, rs._ADD_AUTO_INC);
 	await rs.post("cars", "BMW_740li", { owner: "Bill Bo" }, rs._ADD_AUTO_INC);
 
@@ -54,15 +51,9 @@ const rs = require("rocket-store").default;
 
 	console.log("Get BMW's:\n", await rs.get("cars", "*BMW*"));
 
-	console.log(
-		"Get list ordered by alphabetically descending keys:\n",
-		await rs.get("cars", "", rs._ORDER_DESC)
-	);
+	console.log("Get list ordered by alphabetically descending keys:\n", await rs.get("cars", "", rs._ORDER_DESC));
 
-	console.log(
-		"Delete all Mercedes's:\n",
-		await rs.delete("cars", "*Mercedes*")
-	);
+	console.log("Delete all Mercedes's:\n", await rs.delete("cars", "*Mercedes*"));
 	console.log(await rs.get("cars", "*"));
 
 	await rs.delete();

@@ -6,13 +6,13 @@ SQL equivavalent of inserting a row into a table.
 
 
 Return a promise of a result structure:
-    count: Number of records affected
-    key:   array of keys
+    ***count***: Number of records affected
+    ***key***:   array of keys
 
 
-result = await rs.post( collection, key, record [, options])
+`result = await rs.post( collection, key, record [, options])`
 
-Keys:
+***Keys:***
 
 - Collection and Key must conform to valid file names. Invalid charakters are removed from the key.
 - Keys should never be made of user input data.
@@ -23,7 +23,8 @@ Keys:
 - Avoid keys starting with "." they might not apear in a wildcard search.
 - Avoid the charakters *?<>| as they might create confusion. (The are legal)
 
-options:
-options is an integer composed og flags binarily ored together:
+***Options:***
 
-    _ADD_AUTO_INC: this will add an auto incremented sequence at the begining of the key
+Options is an integer composed og flags binarily ored together:
+
+    ***_ADD_AUTO_INC***: this will add an auto incremented sequence at the begining of the key

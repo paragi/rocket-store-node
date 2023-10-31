@@ -1,10 +1,7 @@
 /*
-█▀ █▄█ █▀▀ █░█ █▀▀ █░█
-▄█ ░█░ █▄▄ █▀█ ██▄ ▀▄▀
-
 Author: Simon Riget
 Contributor: <Anton Sychev> (anton at sychev dot xyz)
-index.mjs (c) 2023
+index.mjs (c) 2017 - 2023
 Created:  2023-10-26 02:43:48
 Desc: Rocket Store - A very simple and yet powerful file storage.
 License:
@@ -32,7 +29,6 @@ import globToRegExp from "glob-to-regexp";
 import { fileNameWash, identifierNameTest } from "./utils/filesValidators.mjs";
 import { fileLock, fileUnlock } from "./utils/files.mjs";
 //TODO: max items per folder, split into subfolders
-//TOOD: implement in langchain
 import { _ORDER, _ORDER_DESC, _ORDERBY_TIME, _LOCK, _DELETE, _KEYS, _COUNT, _ADD_AUTO_INC, _ADD_GUID, _FORMAT_JSON, _FORMAT_NATIVE, _FORMAT_XML, _FORMAT_PHP, } from "./constants.mjs";
 export const Rocketstore = async (set_option) => {
     if (typeof set_option !== "undefined")
