@@ -411,8 +411,22 @@ Deleting test data if any
 
 ---
 ## Updates
+0.10.11 - 0.10.14
+- Config workflow
+- Bug fixes 
+- Update Docs
+ 
+
+0.10.10
+- Code rewrite updating it to the latest standard, removing a dependency.
+- Now it can be imported as CommonJS and as Module in your project.
+
+0.10.9
+- removed remove fs-extra module
+
 0.10.8
 - removed unneeded module sanitise-filename
+
 0.10.7 
 - Bug fix: Wildcard search on windows OS failed to find valid keys.
 
