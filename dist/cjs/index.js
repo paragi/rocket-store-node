@@ -65,6 +65,20 @@ const Rocketstore = (set_option) => __awaiter(void 0, void 0, void 0, function* 
     return exports.Rocketstore;
 });
 exports.Rocketstore = Rocketstore;
+// Declare default constant for export
+exports.Rocketstore._ORDER = constants_js_1._ORDER;
+exports.Rocketstore._ORDER_DESC = constants_js_1._ORDER_DESC;
+exports.Rocketstore._ORDERBY_TIME = constants_js_1._ORDERBY_TIME;
+exports.Rocketstore._LOCK = constants_js_1._LOCK;
+exports.Rocketstore._DELETE = constants_js_1._DELETE;
+exports.Rocketstore._KEYS = constants_js_1._KEYS;
+exports.Rocketstore._COUNT = constants_js_1._COUNT;
+exports.Rocketstore._ADD_AUTO_INC = constants_js_1._ADD_AUTO_INC;
+exports.Rocketstore._ADD_GUID = constants_js_1._ADD_GUID;
+exports.Rocketstore._FORMAT_JSON = constants_js_1._FORMAT_JSON;
+exports.Rocketstore._FORMAT_NATIVE = constants_js_1._FORMAT_NATIVE;
+exports.Rocketstore._FORMAT_XML = constants_js_1._FORMAT_XML;
+exports.Rocketstore._FORMAT_PHP = constants_js_1._FORMAT_PHP;
 exports.Rocketstore.data_storage_area = node_path_1.default.normalize(node_os_1.default.tmpdir() + "/rsdb");
 // Cashing object. (Might become very large)
 exports.Rocketstore.keyCache = {};
@@ -119,7 +133,7 @@ exports.Rocketstore.options = (options = {}) => __awaiter(void 0, void 0, void 0
  *   If keyCache exists for the given collection, entries are added.
  * @param {string} collection
  * @param {string} key
- * @param {*} record
+ * @param {*} record input data
  * @param {*} flags
  * @returns {Object} {key: string, count: number}
  */

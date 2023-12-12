@@ -3,10 +3,12 @@ Author: Simon Riget
 Contributor: <Anton Sychev> (anton at sychev dot xyz) 
 index.js (c) 2017 - 2023 
 Created:  2023-10-28 02:12:56 
-Desc: Rocket-store examples as module
+Desc: Rocket-store examples as common js
 License: 
     * MIT: (c) Paragi 2017, Simon Riget.
 */
+
+//Pre action setup define type: module in your package.json
 
 // Initialize
 import * as store from "rocket-store";
@@ -59,3 +61,99 @@ const rs = await store.Rocketstore({
 	console.log("Delete all records");
 	console.log(await rs.delete());
 })();
+
+/*
+POST a record:
+ { key: 'Mercedes_Benz_GT_R', count: 1 }
+GET a record:
+ {
+  count: 1,
+  key: [ 'Mercedes_Benz_GT_R' ],
+  result: [ { owner: 'Lisa Simpson' } ]
+}
+-----
+POST 3 records
+fileLock /Users/too-off/Desktop/a/webapp cars_seq
+fileUnlock /Users/too-off/Desktop/a/webapp cars_seq
+fileLock /Users/too-off/Desktop/a/webapp cars_seq
+fileUnlock /Users/too-off/Desktop/a/webapp cars_seq
+fileLock /Users/too-off/Desktop/a/webapp cars_seq
+fileUnlock /Users/too-off/Desktop/a/webapp cars_seq
+Get all records:
+ {
+  count: 4,
+  key: [ 'Mercedes_Benz_GT_R', '1-BMW_740li', '2-BMW_740li', '3-BMW_740li' ],
+  result: [
+    { owner: 'Lisa Simpson' },
+    { owner: 'Greg Onslow' },
+    { owner: 'Sam Wise' },
+    { owner: 'Bill Bo' }
+  ]
+}
+-----
+Mass instert
+Get BMW's:
+ {
+  count: 5,
+  key: [
+    '1-BMW_740li',
+    '2-BMW_740li',
+    '3-BMW_740li',
+    'Gregs_BMW_740li',
+    'Bills_BMW_740li'
+  ],
+  result: [
+    { owner: 'Greg Onslow' },
+    { owner: 'Sam Wise' },
+    { owner: 'Bill Bo' },
+    { owner: 'Greg Onslow' },
+    { owner: 'Bill Bo' }
+  ]
+}
+Get list ordered by alphabetically descending keys:
+ {
+  count: 7,
+  key: [
+    'Mercedes_Benz_GT_R',
+    'Lisas_Mercedes_Benz_GT_R',
+    'Gregs_BMW_740li',
+    'Bills_BMW_740li',
+    '3-BMW_740li',
+    '2-BMW_740li',
+    '1-BMW_740li'
+  ],
+  result: [
+    { owner: 'Lisa Simpson' },
+    { owner: 'Lisa Simpson' },
+    { owner: 'Greg Onslow' },
+    { owner: 'Bill Bo' },
+    { owner: 'Bill Bo' },
+    { owner: 'Sam Wise' },
+    { owner: 'Greg Onslow' }
+  ]
+}
+Delete all Mercedes's:
+ { count: 2 }
+-----
+Return all cars
+{
+  count: 5,
+  key: [
+    'Gregs_BMW_740li',
+    'Bills_BMW_740li',
+    '3-BMW_740li',
+    '2-BMW_740li',
+    '1-BMW_740li'
+  ],
+  result: [
+    { owner: 'Greg Onslow' },
+    { owner: 'Bill Bo' },
+    { owner: 'Bill Bo' },
+    { owner: 'Sam Wise' },
+    { owner: 'Greg Onslow' }
+  ]
+}
+-----
+Delete all records
+{ count: 1 }
+*/

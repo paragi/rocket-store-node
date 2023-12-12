@@ -1,5 +1,18 @@
 export function Rocketstore(set_option: any): Promise<{
     (set_option: any): Promise<any>;
+    _ORDER: number;
+    _ORDER_DESC: number;
+    _ORDERBY_TIME: number;
+    _LOCK: number;
+    _DELETE: number;
+    _KEYS: number;
+    _COUNT: number;
+    _ADD_AUTO_INC: number;
+    _ADD_GUID: number;
+    _FORMAT_JSON: number;
+    _FORMAT_NATIVE: number;
+    _FORMAT_XML: number;
+    _FORMAT_PHP: number;
     data_storage_area: string;
     keyCache: {};
     data_format: number;
@@ -15,7 +28,7 @@ export function Rocketstore(set_option: any): Promise<{
      *   If keyCache exists for the given collection, entries are added.
      * @param {string} collection
      * @param {string} key
-     * @param {*} record
+     * @param {*} record input data
      * @param {*} flags
      * @returns {Object} {key: string, count: number}
      */
@@ -60,6 +73,19 @@ export function Rocketstore(set_option: any): Promise<{
     sequence(seq_name: string): Promise<number>;
 }>;
 export namespace Rocketstore {
+    export { _ORDER };
+    export { _ORDER_DESC };
+    export { _ORDERBY_TIME };
+    export { _LOCK };
+    export { _DELETE };
+    export { _KEYS };
+    export { _COUNT };
+    export { _ADD_AUTO_INC };
+    export { _ADD_GUID };
+    export { _FORMAT_JSON };
+    export { _FORMAT_NATIVE };
+    export { _FORMAT_XML };
+    export { _FORMAT_PHP };
     export let data_storage_area: string;
     export let keyCache: {};
     export { _FORMAT_JSON as data_format };
@@ -75,7 +101,7 @@ export namespace Rocketstore {
      *   If keyCache exists for the given collection, entries are added.
      * @param {string} collection
      * @param {string} key
-     * @param {*} record
+     * @param {*} record input data
      * @param {*} flags
      * @returns {Object} {key: string, count: number}
      */
@@ -122,4 +148,16 @@ export namespace Rocketstore {
 }
 export default Rocketstore;
 export * from "./constants.js";
+import { _ORDER } from "./constants.js";
+import { _ORDER_DESC } from "./constants.js";
+import { _ORDERBY_TIME } from "./constants.js";
+import { _LOCK } from "./constants.js";
+import { _DELETE } from "./constants.js";
+import { _KEYS } from "./constants.js";
+import { _COUNT } from "./constants.js";
+import { _ADD_AUTO_INC } from "./constants.js";
+import { _ADD_GUID } from "./constants.js";
 import { _FORMAT_JSON } from "./constants.js";
+import { _FORMAT_NATIVE } from "./constants.js";
+import { _FORMAT_XML } from "./constants.js";
+import { _FORMAT_PHP } from "./constants.js";

@@ -31,7 +31,7 @@ const node_path_1 = __importDefault(require("node:path"));
  * @param {int} lock_retry_interval
  */
 const fileLock = (pathFolder, file, lock_retry_interval = 13) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("fileLock", pathFolder, file);
+    //console.log("fileLock", pathFolder, file);
     return new Promise((resolve, reject) => {
         try {
             const sourcePath = node_path_1.default.join(pathFolder, node_path_1.default.sep, file);
@@ -50,7 +50,7 @@ const fileLock = (pathFolder, file, lock_retry_interval = 13) => __awaiter(void 
             });
         }
         catch (err) {
-            console.error("[390] -> filelock -> ", err);
+            //console.error("[390] -> filelock -> ", err);
             return reject();
         }
     });
@@ -62,7 +62,7 @@ exports.fileLock = fileLock;
  * @param {string} file
  */
 const fileUnlock = (pathFolder, file) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("fileUnlock", pathFolder, file);
+    //console.log("fileUnlock", pathFolder, file);
     return new Promise((resolve, reject) => {
         const fileLockName = node_path_1.default.join(pathFolder, node_path_1.default.sep, "lockfile", node_path_1.default.sep, file);
         if (!node_fs_1.default.existsSync(fileLockName))
@@ -72,7 +72,7 @@ const fileUnlock = (pathFolder, file) => __awaiter(void 0, void 0, void 0, funct
             return resolve();
         }
         catch (err) {
-            console.log("[410] file unlock ->", err);
+            //console.log("[410] file unlock ->", err);
             return reject();
         }
     });

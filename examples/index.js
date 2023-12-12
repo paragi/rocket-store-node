@@ -58,3 +58,91 @@ const rs = require("rocket-store").default;
 
 	await rs.delete();
 })();
+
+/*
+POST a record:
+ { key: 'Mercedes_Benz_GT_R', count: 1 }
+GET a record:
+ {
+  count: 1,
+  key: [ 'Mercedes_Benz_GT_R' ],
+  result: [ { owner: 'Lisa Simpson' } ]
+}
+fileLock /Users/too-off/Desktop/b/webapp cars_seq
+fileUnlock /Users/too-off/Desktop/b/webapp cars_seq
+fileLock /Users/too-off/Desktop/b/webapp cars_seq
+fileUnlock /Users/too-off/Desktop/b/webapp cars_seq
+fileLock /Users/too-off/Desktop/b/webapp cars_seq
+fileUnlock /Users/too-off/Desktop/b/webapp cars_seq
+Get all records:
+ {
+  count: 4,
+  key: [ 'Mercedes_Benz_GT_R', '1-BMW_740li', '2-BMW_740li', '3-BMW_740li' ],
+  result: [
+    { owner: 'Lisa Simpson' },
+    { owner: 'Greg Onslow' },
+    { owner: 'Sam Wise' },
+    { owner: 'Bill Bo' }
+  ]
+}
+Get BMW's:
+ {
+  count: 5,
+  key: [
+    '1-BMW_740li',
+    '2-BMW_740li',
+    '3-BMW_740li',
+    'Gregs_BMW_740li',
+    'Bills_BMW_740li'
+  ],
+  result: [
+    { owner: 'Greg Onslow' },
+    { owner: 'Sam Wise' },
+    { owner: 'Bill Bo' },
+    { owner: 'Greg Onslow' },
+    { owner: 'Bill Bo' }
+  ]
+}
+Get list ordered by alphabetically descending keys:
+ {
+  count: 7,
+  key: [
+    'Mercedes_Benz_GT_R',
+    'Lisas_Mercedes_Benz_GT_R',
+    'Gregs_BMW_740li',
+    'Bills_BMW_740li',
+    '3-BMW_740li',
+    '2-BMW_740li',
+    '1-BMW_740li'
+  ],
+  result: [
+    { owner: 'Lisa Simpson' },
+    { owner: 'Lisa Simpson' },
+    { owner: 'Greg Onslow' },
+    { owner: 'Bill Bo' },
+    { owner: 'Bill Bo' },
+    { owner: 'Sam Wise' },
+    { owner: 'Greg Onslow' }
+  ]
+}
+Delete all Mercedes's:
+ { count: 2 }
+{
+  count: 5,
+  key: [
+    'Gregs_BMW_740li',
+    'Bills_BMW_740li',
+    '3-BMW_740li',
+    '2-BMW_740li',
+    '1-BMW_740li'
+  ],
+  result: [
+    { owner: 'Greg Onslow' },
+    { owner: 'Bill Bo' },
+    { owner: 'Bill Bo' },
+    { owner: 'Sam Wise' },
+    { owner: 'Greg Onslow' }
+  ]
+}
+
+*/
