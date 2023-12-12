@@ -61,72 +61,72 @@ const files_js_1 = require("./utils/files.js");
 const constants_js_1 = require("./constants.js");
 const Rocketstore = (set_option) => __awaiter(void 0, void 0, void 0, function* () {
     if (typeof set_option !== "undefined")
-        yield exports.Rocketstore.options(set_option);
-    return exports.Rocketstore;
+        yield Rocketstore.options(set_option);
+    return Rocketstore;
 });
 exports.Rocketstore = Rocketstore;
 // Declare default constant for export
-exports.Rocketstore._ORDER = constants_js_1._ORDER;
-exports.Rocketstore._ORDER_DESC = constants_js_1._ORDER_DESC;
-exports.Rocketstore._ORDERBY_TIME = constants_js_1._ORDERBY_TIME;
-exports.Rocketstore._LOCK = constants_js_1._LOCK;
-exports.Rocketstore._DELETE = constants_js_1._DELETE;
-exports.Rocketstore._KEYS = constants_js_1._KEYS;
-exports.Rocketstore._COUNT = constants_js_1._COUNT;
-exports.Rocketstore._ADD_AUTO_INC = constants_js_1._ADD_AUTO_INC;
-exports.Rocketstore._ADD_GUID = constants_js_1._ADD_GUID;
-exports.Rocketstore._FORMAT_JSON = constants_js_1._FORMAT_JSON;
-exports.Rocketstore._FORMAT_NATIVE = constants_js_1._FORMAT_NATIVE;
-exports.Rocketstore._FORMAT_XML = constants_js_1._FORMAT_XML;
-exports.Rocketstore._FORMAT_PHP = constants_js_1._FORMAT_PHP;
-exports.Rocketstore.data_storage_area = node_path_1.default.normalize(node_os_1.default.tmpdir() + "/rsdb");
+Rocketstore._ORDER = constants_js_1._ORDER;
+Rocketstore._ORDER_DESC = constants_js_1._ORDER_DESC;
+Rocketstore._ORDERBY_TIME = constants_js_1._ORDERBY_TIME;
+Rocketstore._LOCK = constants_js_1._LOCK;
+Rocketstore._DELETE = constants_js_1._DELETE;
+Rocketstore._KEYS = constants_js_1._KEYS;
+Rocketstore._COUNT = constants_js_1._COUNT;
+Rocketstore._ADD_AUTO_INC = constants_js_1._ADD_AUTO_INC;
+Rocketstore._ADD_GUID = constants_js_1._ADD_GUID;
+Rocketstore._FORMAT_JSON = constants_js_1._FORMAT_JSON;
+Rocketstore._FORMAT_NATIVE = constants_js_1._FORMAT_NATIVE;
+Rocketstore._FORMAT_XML = constants_js_1._FORMAT_XML;
+Rocketstore._FORMAT_PHP = constants_js_1._FORMAT_PHP;
+Rocketstore.data_storage_area = node_path_1.default.normalize(node_os_1.default.tmpdir() + "/rsdb");
 // Cashing object. (Might become very large)
-exports.Rocketstore.keyCache = {};
+Rocketstore.keyCache = {};
 // Set default options
-exports.Rocketstore.data_format = constants_js_1._FORMAT_JSON;
-exports.Rocketstore.lock_retry_interval = 13; // ms
-exports.Rocketstore.lock_files = true;
+Rocketstore.data_format = constants_js_1._FORMAT_JSON;
+Rocketstore.lock_retry_interval = 13; // ms
+Rocketstore.lock_files = true;
 /**
  * Set options
  * @param {Object} options
  */
-exports.Rocketstore.options = (options = {}) => __awaiter(void 0, void 0, void 0, function* () {
+Rocketstore.options = (options = {}) => __awaiter(void 0, void 0, void 0, function* () {
     if (!Object.keys(options).length)
         return;
     // Format
     if (typeof options.data_format !== "undefined")
         if (typeof options.data_format === "number") {
             if (options.data_format & (constants_js_1._FORMAT_JSON | constants_js_1._FORMAT_XML | constants_js_1._FORMAT_NATIVE))
-                exports.Rocketstore.data_format = options.data_format;
+                Rocketstore.data_format = options.data_format;
         }
         else
             throw new Error(`Unknown data format: '${options.data_format}'`);
     // Set native data format
-    if (options.data_format || exports.Rocketstore.data_format === constants_js_1._FORMAT_NATIVE)
-        exports.Rocketstore.data_format = constants_js_1._FORMAT_JSON;
+    if (options.data_format || Rocketstore.data_format === constants_js_1._FORMAT_NATIVE)
+        Rocketstore.data_format = constants_js_1._FORMAT_JSON;
     // Data storage area
     if (typeof options.data_storage_area === "string" || typeof options.data_storage_area === "number") {
-        exports.Rocketstore.data_storage_area = node_path_1.default.resolve(options.data_storage_area);
+        Rocketstore.data_storage_area = node_path_1.default.resolve(options.data_storage_area);
         try {
-            const status = node_fs_1.default.lstatSync(exports.Rocketstore.data_storage_area, {
+            const status = node_fs_1.default.lstatSync(Rocketstore.data_storage_area, {
                 mode: 0o775,
                 throwIfNoEntry: false,
             });
             if (!status)
-                node_fs_1.default.mkdirSync(exports.Rocketstore.data_storage_area, { recursive: true, mode: 0o775 });
+                node_fs_1.default.mkdirSync(Rocketstore.data_storage_area, { recursive: true, mode: 0o775 });
         }
         catch (err) {
-            throw new Error(`Unable to create data storage directory '${exports.Rocketstore.data_storage_area}': `, err);
+            throw new Error(`Unable to create data storage directory '${Rocketstore.data_storage_area}': `, err);
         }
     }
     else if (typeof options.data_storage_area !== "undefined")
         throw new Error(`Data storage area must be a directory path`);
     // lock timing
     if (typeof options.lock_retry_interval === "number")
-        exports.Rocketstore.lock_retry_interval = options.lock_retry_interval;
+        Rocketstore.lock_retry_interval = options.lock_retry_interval;
     // lock files
     if (typeof options.lock_files === "boolean")
-        exports.Rocketstore.lock_files = options.lock_files;
+        Rocketstore.lock_files = options.lock_files;
 });
 /**
  *   Post a data record (Insert or overwrite)
@@ -137,7 +137,7 @@ exports.Rocketstore.options = (options = {}) => __awaiter(void 0, void 0, void 0
  * @param {*} flags
  * @returns {Object} {key: string, count: number}
  */
-exports.Rocketstore.post = (collection, key, record, flags) => __awaiter(void 0, void 0, void 0, function* () {
+Rocketstore.post = (collection, key, record, flags) => __awaiter(void 0, void 0, void 0, function* () {
     collection = "" + (collection || "");
     if (collection.length < 1)
         throw new Error("No valid collection name given");
@@ -149,7 +149,7 @@ exports.Rocketstore.post = (collection, key, record, flags) => __awaiter(void 0,
         flags = 0;
     // Insert a sequence
     if (key.length < 1 || flags & constants_js_1._ADD_AUTO_INC) {
-        const _sequence = yield exports.Rocketstore.sequence(collection);
+        const _sequence = yield Rocketstore.sequence(collection);
         key = key.length > 0 ? `${_sequence}-${key}` : `${_sequence}`;
     }
     // Insert a Globally Unique IDentifier
@@ -159,9 +159,9 @@ exports.Rocketstore.post = (collection, key, record, flags) => __awaiter(void 0,
         key = key.length > 0 ? `${guid}-${key}` : `${guid}`;
     }
     // Write to file
-    let dirToWrite = node_path_1.default.join(exports.Rocketstore.data_storage_area, node_path_1.default.sep, collection);
+    let dirToWrite = node_path_1.default.join(Rocketstore.data_storage_area, node_path_1.default.sep, collection);
     let fileName = node_path_1.default.join(dirToWrite, node_path_1.default.sep, key);
-    if (exports.Rocketstore.data_format & constants_js_1._FORMAT_JSON) {
+    if (Rocketstore.data_format & constants_js_1._FORMAT_JSON) {
         if (!node_fs_1.default.existsSync(fileName))
             node_fs_1.default.mkdirSync(dirToWrite, { recursive: true, mode: 0o777 });
         const data = new Uint8Array(node_buffer_1.Buffer.from(JSON.stringify(record)));
@@ -172,8 +172,8 @@ exports.Rocketstore.post = (collection, key, record, flags) => __awaiter(void 0,
     else
         throw new Error("Sorry, that data format is not supported");
     // Store key in cash
-    if (Array.isArray(exports.Rocketstore.keyCache[collection]) && exports.Rocketstore.keyCache[collection].indexOf(key) < 0)
-        exports.Rocketstore.keyCache[collection][exports.Rocketstore.keyCache[collection].length] = key;
+    if (Array.isArray(Rocketstore.keyCache[collection]) && Rocketstore.keyCache[collection].indexOf(key) < 0)
+        Rocketstore.keyCache[collection][Rocketstore.keyCache[collection].length] = key;
     return { key: key, count: 1 };
 });
 /**
@@ -197,7 +197,7 @@ NB: Files may have been removed manually and should be removed from the cache
 * @param {*} max_time
 * @returns
 */
-exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awaiter(void 0, void 0, void 0, function* () {
+Rocketstore.get = (collection, key, flags, min_time, max_time) => __awaiter(void 0, void 0, void 0, function* () {
     let keys = [];
     let unCache = [];
     let record = [];
@@ -210,17 +210,17 @@ exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awai
     // Check key validity
     key = (0, filesValidators_js_1.fileNameWash)("" + (key || "")).replace(/[*]{2,}/g, "*", true); // remove globstars **
     // Prepare search
-    let scanDir = node_path_1.default.normalize(node_path_1.default.join(exports.Rocketstore.data_storage_area, node_path_1.default.sep, collection ? collection + node_path_1.default.sep : ""));
+    let scanDir = node_path_1.default.normalize(node_path_1.default.join(Rocketstore.data_storage_area, node_path_1.default.sep, collection ? collection + node_path_1.default.sep : ""));
     let wildcard = key.indexOf("*") > -1 || key.indexOf("?") > -1 || !key.length;
     if (wildcard && !(flags & constants_js_1._DELETE && !key)) {
         let list = [];
         // Read directory into cache
-        if (!collection || !Array.isArray(exports.Rocketstore.keyCache[collection])) {
+        if (!collection || !Array.isArray(Rocketstore.keyCache[collection])) {
             try {
                 list = yield node_fs_1.default.promises.readdir(scanDir);
                 // Update cache
                 if (collection && list.length) {
-                    exports.Rocketstore.keyCache[collection] = list;
+                    Rocketstore.keyCache[collection] = list;
                 }
             }
             catch (err) {
@@ -229,14 +229,14 @@ exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awai
                 }
             }
         }
-        if (collection && Array.isArray(exports.Rocketstore.keyCache[collection])) {
-            list = exports.Rocketstore.keyCache[collection];
+        if (collection && Array.isArray(Rocketstore.keyCache[collection])) {
+            list = Rocketstore.keyCache[collection];
         }
         // Wildcard search
         if (key && key != "*") {
             let regex = (0, glob_to_regexp_1.default)(key); // ? are not dealt with. replace \? => ?
             regex = new RegExp(String(regex).slice(1, -1).replace(/\\\?/g, ".?"));
-            let haystack = collection ? exports.Rocketstore.keyCache[collection] : list;
+            let haystack = collection ? Rocketstore.keyCache[collection] : list;
             for (let i in haystack)
                 if (regex.test(haystack[i]))
                     keys[keys.length] = haystack[i]; // 10 x faster than push
@@ -255,8 +255,8 @@ exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awai
     }
     else {
         if (collection &&
-            Array.isArray(exports.Rocketstore.keyCache[collection]) &&
-            exports.Rocketstore.keyCache[collection].indexOf(key) < 0)
+            Array.isArray(Rocketstore.keyCache[collection]) &&
+            Rocketstore.keyCache[collection].indexOf(key) < 0)
             keys = [];
         else if (key)
             keys = [key];
@@ -267,7 +267,7 @@ exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awai
         for (let i in keys) {
             let fileName = scanDir + keys[i];
             // Read JSON record file
-            if (exports.Rocketstore.data_format & constants_js_1._FORMAT_JSON) {
+            if (Rocketstore.data_format & constants_js_1._FORMAT_JSON) {
                 promises[promises.length] = new Promise((resolve, reject) => {
                     node_fs_1.default.readFile(fileName, "utf8", ((i) => {
                         return (err, data) => {
@@ -302,15 +302,15 @@ exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awai
     else if (flags & constants_js_1._DELETE) {
         // Delete database
         if (!collection && !key) {
-            if (node_fs_1.default.existsSync(exports.Rocketstore.data_storage_area)) {
-                promises[promises.length] = node_fs_1.default.rm(exports.Rocketstore.data_storage_area, { force: true, recursive: true }, () => { });
-                exports.Rocketstore.keyCache = {};
+            if (node_fs_1.default.existsSync(Rocketstore.data_storage_area)) {
+                promises[promises.length] = node_fs_1.default.rm(Rocketstore.data_storage_area, { force: true, recursive: true }, () => { });
+                Rocketstore.keyCache = {};
                 count = 1;
             }
             // Delete collection and sequences
         }
         else if (collection && !key) {
-            let fileName = node_path_1.default.join(exports.Rocketstore.data_storage_area + node_path_1.default.sep + collection);
+            let fileName = node_path_1.default.join(Rocketstore.data_storage_area + node_path_1.default.sep + collection);
             count = 0;
             if (node_fs_1.default.existsSync(fileName)) {
                 const statCheck = node_fs_1.default.statSync(fileName);
@@ -326,7 +326,7 @@ exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awai
                     count++;
                 }
             }
-            delete exports.Rocketstore.keyCache[collection];
+            delete Rocketstore.keyCache[collection];
             // Delete records and  ( collection and sequences found with wildcards )
         }
         else if (keys.length) {
@@ -343,9 +343,9 @@ exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awai
         yield Promise.all(promises);
     // Clean up cache and keys
     if (unCache.length) {
-        if (Array.isArray(exports.Rocketstore.keyCache[collection]))
-            exports.Rocketstore.keyCache[collection] = exports.Rocketstore.keyCache[collection].filter((e) => unCache.indexOf(e) < 0);
-        if (keys != exports.Rocketstore.keyCache[collection])
+        if (Array.isArray(Rocketstore.keyCache[collection]))
+            Rocketstore.keyCache[collection] = Rocketstore.keyCache[collection].filter((e) => unCache.indexOf(e) < 0);
+        if (keys != Rocketstore.keyCache[collection])
             keys = keys.filter((e) => unCache.indexOf(e) < 0);
         if (record.length)
             record = record.filter((e) => e != "*deleted*");
@@ -362,15 +362,15 @@ exports.Rocketstore.get = (collection, key, flags, min_time, max_time) => __awai
  * @param {string} collection
  * @param {string} key
  */
-exports.Rocketstore.delete = (collection, key) => __awaiter(void 0, void 0, void 0, function* () {
-    return exports.Rocketstore.get(collection, key, constants_js_1._DELETE, null, null);
+Rocketstore.delete = (collection, key) => __awaiter(void 0, void 0, void 0, function* () {
+    return Rocketstore.get(collection, key, constants_js_1._DELETE, null, null);
 });
 /**
  *  Get and auto incremented sequence or create it
  * @param {string} seq_name
  * @returns {Promise<number>} The next sequence value
  */
-exports.Rocketstore.sequence = (seq_name) => __awaiter(void 0, void 0, void 0, function* () {
+Rocketstore.sequence = (seq_name) => __awaiter(void 0, void 0, void 0, function* () {
     if (!seq_name)
         throw new Error("Sequence name is invalid");
     let sequence = -1;
@@ -379,10 +379,10 @@ exports.Rocketstore.sequence = (seq_name) => __awaiter(void 0, void 0, void 0, f
     if (typeof name !== "string" || name.length < 1)
         throw new Error("Sequence name is invalid");
     name += "_seq";
-    const fileName = node_path_1.default.join(exports.Rocketstore.data_storage_area, node_path_1.default.sep, name);
+    const fileName = node_path_1.default.join(Rocketstore.data_storage_area, node_path_1.default.sep, name);
     //lock file
-    if (exports.Rocketstore.lock_files)
-        yield (0, files_js_1.fileLock)(exports.Rocketstore.data_storage_area, name, exports.Rocketstore.lock_retry_interval);
+    if (Rocketstore.lock_files)
+        yield (0, files_js_1.fileLock)(Rocketstore.data_storage_area, name, Rocketstore.lock_retry_interval);
     try {
         const data = yield node_fs_1.default.promises.readFile(fileName, "utf8");
         sequence = parseInt(data) + 1 || 1;
@@ -408,9 +408,9 @@ exports.Rocketstore.sequence = (seq_name) => __awaiter(void 0, void 0, void 0, f
         }
     }
     //unlock file
-    if (exports.Rocketstore.lock_files)
-        yield (0, files_js_1.fileUnlock)(exports.Rocketstore.data_storage_area, name);
+    if (Rocketstore.lock_files)
+        yield (0, files_js_1.fileUnlock)(Rocketstore.data_storage_area, name);
     return sequence;
 });
-exports.default = exports.Rocketstore;
 __exportStar(require("./constants.js"), exports);
+exports.default = Rocketstore;

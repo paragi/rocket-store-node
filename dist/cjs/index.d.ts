@@ -1,3 +1,5 @@
+export * from "./constants.js";
+export default Rocketstore;
 export function Rocketstore(set_option: any): Promise<{
     (set_option: any): Promise<any>;
     _ORDER: number;
@@ -146,8 +148,6 @@ export namespace Rocketstore {
      */
     export function sequence(seq_name: string): Promise<number>;
 }
-export default Rocketstore;
-export * from "./constants.js";
 import { _ORDER } from "./constants.js";
 import { _ORDER_DESC } from "./constants.js";
 import { _ORDERBY_TIME } from "./constants.js";

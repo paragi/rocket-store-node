@@ -30,7 +30,7 @@ import { fileNameWash, identifierNameTest } from "./utils/filesValidators.mjs";
 import { fileLock, fileUnlock } from "./utils/files.mjs";
 //TODO: max items per folder, split into subfolders
 import { _ORDER, _ORDER_DESC, _ORDERBY_TIME, _LOCK, _DELETE, _KEYS, _COUNT, _ADD_AUTO_INC, _ADD_GUID, _FORMAT_JSON, _FORMAT_NATIVE, _FORMAT_XML, _FORMAT_PHP, } from "./constants.mjs";
-export const Rocketstore = async (set_option) => {
+const Rocketstore = async (set_option) => {
     if (typeof set_option !== "undefined")
         await Rocketstore.options(set_option);
     return Rocketstore;
@@ -382,5 +382,6 @@ Rocketstore.sequence = async (seq_name) => {
         await fileUnlock(Rocketstore.data_storage_area, name);
     return sequence;
 };
-export default Rocketstore;
 export * from "./constants.mjs";
+export { Rocketstore };
+export default Rocketstore;

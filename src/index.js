@@ -49,7 +49,7 @@ import {
 	_FORMAT_PHP,
 } from "./constants.js";
 
-export const Rocketstore = async (set_option) => {
+const Rocketstore = async (set_option) => {
 	if (typeof set_option !== "undefined") await Rocketstore.options(set_option);
 	return Rocketstore;
 };
@@ -430,5 +430,7 @@ Rocketstore.sequence = async (seq_name) => {
 	return sequence;
 };
 
-export default Rocketstore;
 export * from "./constants.js";
+
+export { Rocketstore };
+export default Rocketstore;

@@ -416,11 +416,15 @@ First run `npm install typescript -g` after thaht run `npm run build`.
 ---
 ## Updates
 
+0.10.15
+- Unification on import / require Rocket Store 
+
 0.10.11 - 0.10.14
 - Config workflow
 - Bug fixes 
 - Update Docs
 - Auto compile before publish code
+- Update examples
 
 0.10.10
 - Code rewrite updating it to the latest standard, removing a dependency.
