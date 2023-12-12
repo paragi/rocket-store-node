@@ -54,6 +54,10 @@ Module
 ```js
 import * as store from "rocket-store";
 const rs = await store.Rocketstore();
+
+// ---- ALTERNATIVE ----
+// it can also be accessed and launched with the 'default' method
+const rs = await store.default();
 ```
 
 Rocket-Store does not require initialization:
@@ -417,7 +421,7 @@ First run `npm install typescript -g` after thaht run `npm run build`.
 ## Updates
 
 0.10.15
-- Unification on import / require Rocket Store 
+- Unification in import / requirement of the Rocket Store package
 
 0.10.11 - 0.10.14
 - Config workflow
