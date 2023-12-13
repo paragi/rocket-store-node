@@ -30,11 +30,25 @@ import { fileNameWash, identifierNameTest } from "./utils/filesValidators.mjs";
 import { fileLock, fileUnlock } from "./utils/files.mjs";
 //TODO: max items per folder, split into subfolders
 import { _ORDER, _ORDER_DESC, _ORDERBY_TIME, _LOCK, _DELETE, _KEYS, _COUNT, _ADD_AUTO_INC, _ADD_GUID, _FORMAT_JSON, _FORMAT_NATIVE, _FORMAT_XML, _FORMAT_PHP, } from "./constants.mjs";
-export const Rocketstore = async (set_option) => {
+const Rocketstore = async (set_option) => {
     if (typeof set_option !== "undefined")
         await Rocketstore.options(set_option);
     return Rocketstore;
 };
+// Declare default constant for export
+Rocketstore._ORDER = _ORDER;
+Rocketstore._ORDER_DESC = _ORDER_DESC;
+Rocketstore._ORDERBY_TIME = _ORDERBY_TIME;
+Rocketstore._LOCK = _LOCK;
+Rocketstore._DELETE = _DELETE;
+Rocketstore._KEYS = _KEYS;
+Rocketstore._COUNT = _COUNT;
+Rocketstore._ADD_AUTO_INC = _ADD_AUTO_INC;
+Rocketstore._ADD_GUID = _ADD_GUID;
+Rocketstore._FORMAT_JSON = _FORMAT_JSON;
+Rocketstore._FORMAT_NATIVE = _FORMAT_NATIVE;
+Rocketstore._FORMAT_XML = _FORMAT_XML;
+Rocketstore._FORMAT_PHP = _FORMAT_PHP;
 Rocketstore.data_storage_area = path.normalize(os.tmpdir() + "/rsdb");
 // Cashing object. (Might become very large)
 Rocketstore.keyCache = {};
@@ -89,7 +103,7 @@ Rocketstore.options = async (options = {}) => {
  *   If keyCache exists for the given collection, entries are added.
  * @param {string} collection
  * @param {string} key
- * @param {*} record
+ * @param {*} record input data
  * @param {*} flags
  * @returns {Object} {key: string, count: number}
  */
@@ -368,5 +382,6 @@ Rocketstore.sequence = async (seq_name) => {
         await fileUnlock(Rocketstore.data_storage_area, name);
     return sequence;
 };
-export default Rocketstore;
 export * from "./constants.mjs";
+export { Rocketstore };
+export default Rocketstore;
