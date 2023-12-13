@@ -45,7 +45,7 @@ result = await rs.delete("cars","*cede*");
 
 ## Usages
 
-Commen JS
+Common JS
 ```js
 const rs = require('rocket-store').default;
 ```
