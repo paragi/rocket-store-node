@@ -79,6 +79,8 @@ Rocketstore._FORMAT_JSON = constants_js_1._FORMAT_JSON;
 Rocketstore._FORMAT_NATIVE = constants_js_1._FORMAT_NATIVE;
 Rocketstore._FORMAT_XML = constants_js_1._FORMAT_XML;
 Rocketstore._FORMAT_PHP = constants_js_1._FORMAT_PHP;
+Rocketstore._FILECHECK_DEFAULT = constants_js_1._FILECHECK_DEFAULT;
+Rocketstore._FILECHECK_LOW = constants_js_1._FILECHECK_LOW;
 Rocketstore.data_storage_area = node_path_1.default.normalize(node_os_1.default.tmpdir() + "/rsdb");
 // Cashing object. (Might become very large)
 Rocketstore.keyCache = {};
@@ -86,6 +88,7 @@ Rocketstore.keyCache = {};
 Rocketstore.data_format = constants_js_1._FORMAT_JSON;
 Rocketstore.lock_retry_interval = 13; // ms
 Rocketstore.lock_files = true;
+Rocketstore.check_files = constants_js_1._FILECHECK_DEFAULT;
 /**
  * Set options
  * @param {Object} options
@@ -127,6 +130,9 @@ Rocketstore.options = (...args_1) => __awaiter(void 0, [...args_1], void 0, func
     // lock files
     if (typeof options.lock_files === "boolean")
         Rocketstore.lock_files = options.lock_files;
+    // filecheck
+    if (typeof options.check_files === "boolean")
+        Rocketstore.check_files = options.check_files;
 });
 /**
  *   Post a data record (Insert or overwrite)
@@ -141,8 +147,12 @@ Rocketstore.post = (collection, key, record, flags) => __awaiter(void 0, void 0,
     collection = "" + (collection || "");
     if (collection.length < 1)
         throw new Error("No valid collection name given");
-    if (!(0, filesValidators_js_1.identifierNameTest)(collection))
-        throw new Error("Collection name contains illegal characters (For a javascript identifier)");
+    if (Rocketstore.check_files === constants_js_1._FILECHECK_DEFAULT)
+        if (!(0, filesValidators_js_1.identifierNameTest)(collection))
+            throw new Error("Collection name contains illegal characters (For a javascript identifier)");
+    if (Rocketstore.check_files === constants_js_1._FILECHECK_LOW)
+        if (!(0, filesValidators_js_1.identifierNameSimplyTest)(collection))
+            throw new Error("Collection name contains illegal characters (For a javascript identifier)");
     // Remove wildwards (unix only)
     key = typeof key === "number" || key ? (0, filesValidators_js_1.fileNameWash)("" + key).replace(/[\*\?]/g, "") : "";
     if (typeof flags !== "number")
@@ -205,7 +215,10 @@ Rocketstore.get = (collection, key, flags, min_time, max_time) => __awaiter(void
     let count = 0;
     // Check collection name
     collection = "" + (collection || "");
-    if (collection.length > 0 && !(0, filesValidators_js_1.identifierNameTest)(collection))
+    let checkName = Rocketstore.check_files === constants_js_1._FILECHECK_DEFAULT
+        ? (0, filesValidators_js_1.identifierNameTest)(collection)
+        : (0, filesValidators_js_1.identifierNameSimplyTest)(collection);
+    if (collection.length > 0 && !checkName)
         throw new Error("Collection name contains illegal characters (For a javascript identifier)");
     // Check key validity
     key = (0, filesValidators_js_1.fileNameWash)("" + (key || "")).replace(/[*]{2,}/g, "*", true); // remove globstars **

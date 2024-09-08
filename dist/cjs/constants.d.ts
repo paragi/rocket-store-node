@@ -11,3 +11,5 @@ export const _FORMAT_JSON: 1;
 export const _FORMAT_NATIVE: 2;
 export const _FORMAT_XML: 4;
 export const _FORMAT_PHP: 8;
+export const _FILECHECK_DEFAULT: 1;
+export const _FILECHECK_LOW: 2;

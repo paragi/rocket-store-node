@@ -28,7 +28,7 @@ import path from "node:path";
 import { Buffer } from "node:buffer";
 import globToRegExp from "glob-to-regexp";
 
-import { fileNameWash, identifierNameTest } from "./utils/filesValidators.js";
+import { fileNameWash, identifierNameTest, identifierNameSimplyTest } from "./utils/filesValidators.js";
 import { fileLock, fileUnlock } from "./utils/files.js";
 
 //TODO: max items per folder, split into subfolders
@@ -47,6 +47,8 @@ import {
 	_FORMAT_NATIVE,
 	_FORMAT_XML,
 	_FORMAT_PHP,
+	_FILECHECK_DEFAULT,
+	_FILECHECK_LOW,
 } from "./constants.js";
 
 const Rocketstore = async (set_option) => {
@@ -68,6 +70,8 @@ Rocketstore._FORMAT_JSON = _FORMAT_JSON;
 Rocketstore._FORMAT_NATIVE = _FORMAT_NATIVE;
 Rocketstore._FORMAT_XML = _FORMAT_XML;
 Rocketstore._FORMAT_PHP = _FORMAT_PHP;
+Rocketstore._FILECHECK_DEFAULT = _FILECHECK_DEFAULT;
+Rocketstore._FILECHECK_LOW = _FILECHECK_LOW;
 
 Rocketstore.data_storage_area = path.normalize(os.tmpdir() + "/rsdb");
 
@@ -78,6 +82,7 @@ Rocketstore.keyCache = {};
 Rocketstore.data_format = _FORMAT_JSON;
 Rocketstore.lock_retry_interval = 13; // ms
 Rocketstore.lock_files = true;
+Rocketstore.check_files = _FILECHECK_DEFAULT;
 
 /**
  * Set options
@@ -118,6 +123,9 @@ Rocketstore.options = async (options = {}) => {
 
 	// lock files
 	if (typeof options.lock_files === "boolean") Rocketstore.lock_files = options.lock_files;
+
+	// filecheck
+	if (typeof options.check_files === "boolean") Rocketstore.check_files = options.check_files;
 };
 
 /**
@@ -133,8 +141,12 @@ Rocketstore.post = async (collection, key, record, flags) => {
 	collection = "" + (collection || "");
 	if (collection.length < 1) throw new Error("No valid collection name given");
 
-	if (!identifierNameTest(collection))
-		throw new Error("Collection name contains illegal characters (For a javascript identifier)");
+	if (Rocketstore.check_files === _FILECHECK_DEFAULT)
+		if (!identifierNameTest(collection))
+			throw new Error("Collection name contains illegal characters (For a javascript identifier)");
+	if (Rocketstore.check_files === _FILECHECK_LOW)
+		if (!identifierNameSimplyTest(collection))
+			throw new Error("Collection name contains illegal characters (For a javascript identifier)");
 
 	// Remove wildwards (unix only)
 	key = typeof key === "number" || key ? fileNameWash("" + key).replace(/[\*\?]/g, "") : "";
@@ -205,7 +217,13 @@ Rocketstore.get = async (collection, key, flags, min_time, max_time) => {
 
 	// Check collection name
 	collection = "" + (collection || "");
-	if (collection.length > 0 && !identifierNameTest(collection))
+
+	let checkName =
+		Rocketstore.check_files === _FILECHECK_DEFAULT
+			? identifierNameTest(collection)
+			: identifierNameSimplyTest(collection);
+
+	if (collection.length > 0 && !checkName)
 		throw new Error("Collection name contains illegal characters (For a javascript identifier)");
 
 	// Check key validity

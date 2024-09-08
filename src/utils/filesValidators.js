@@ -1,7 +1,7 @@
 /*
 Author: Simon Riget
 Contributor: <Anton Sychev> (anton at sychev dot xyz) 
-index.js (c) 2017 - 2023 
+index.js (c) 2017 - 20234
 Created:  2023-10-28 02:12:56 
 Desc: Name validator and file name corrections
 License: 
@@ -9,6 +9,12 @@ License:
 */
 
 import os from "node:os";
+
+export const identifierNameSimplyTest = (name) => {
+	return /^(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|null|this|true|void|with|await|break|catch|class|const|false|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)\b)/.test(
+		name,
+	);
+};
 
 /**
  *  ECMAScript 6: By Mathias Bynens mathiasbynens

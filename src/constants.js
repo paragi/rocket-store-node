@@ -26,3 +26,7 @@ export const _FORMAT_JSON = 0x01;
 export const _FORMAT_NATIVE = 0x02;
 export const _FORMAT_XML = 0x04;
 export const _FORMAT_PHP = 0x08;
+
+// file check options
+export const _FILECHECK_DEFAULT = 0x01;
+export const _FILECHECK_LOW = 0x02;
