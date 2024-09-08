@@ -26,8 +26,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { Buffer } from "node:buffer";
 import globToRegExp from "glob-to-regexp";
-import { fileNameWash, identifierNameTest } from "./utils/filesValidators";
-import { fileLock, fileUnlock } from "./utils/files";
+import { fileNameWash, identifierNameTest } from "./utils/filesValidators.mjs";
+import { fileLock, fileUnlock } from "./utils/files.mjs";
 //TODO: max items per folder, split into subfolders
 import { _ORDER, _ORDER_DESC, _ORDERBY_TIME, _LOCK, _DELETE, _KEYS, _COUNT, _ADD_AUTO_INC, _ADD_GUID, _FORMAT_JSON, _FORMAT_NATIVE, _FORMAT_XML, _FORMAT_PHP, } from "./constants.mjs";
 const Rocketstore = async (set_option) => {
