@@ -423,10 +423,12 @@ First run `npm install typescript -g` after thaht run `npm run build`.
 ---
 ## Updates
 
+0.10.18
+- Added new Option for Check files names 
+
 0.10.17
 - Correction of file path in utils for MODULE compilation
 - Update dependecies
-- Added new Option for Check files names 
  
 0.10.15
 - Unification in import / requirement of the Rocket Store package
