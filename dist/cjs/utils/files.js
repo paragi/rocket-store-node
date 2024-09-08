@@ -30,7 +30,7 @@ const node_path_1 = __importDefault(require("node:path"));
  * @param {string} file
  * @param {int} lock_retry_interval
  */
-const fileLock = (pathFolder, file, lock_retry_interval = 13) => __awaiter(void 0, void 0, void 0, function* () {
+const fileLock = (pathFolder_1, file_1, ...args_1) => __awaiter(void 0, [pathFolder_1, file_1, ...args_1], void 0, function* (pathFolder, file, lock_retry_interval = 13) {
     //console.log("fileLock", pathFolder, file);
     return new Promise((resolve, reject) => {
         try {

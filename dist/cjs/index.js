@@ -55,8 +55,8 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const node_buffer_1 = require("node:buffer");
 const glob_to_regexp_1 = __importDefault(require("glob-to-regexp"));
-const filesValidators_js_1 = require("./utils/filesValidators.js");
-const files_js_1 = require("./utils/files.js");
+const filesValidators_1 = require("./utils/filesValidators");
+const files_1 = require("./utils/files");
 //TODO: max items per folder, split into subfolders
 const constants_js_1 = require("./constants.js");
 const Rocketstore = (set_option) => __awaiter(void 0, void 0, void 0, function* () {
@@ -90,7 +90,7 @@ Rocketstore.lock_files = true;
  * Set options
  * @param {Object} options
  */
-Rocketstore.options = (options = {}) => __awaiter(void 0, void 0, void 0, function* () {
+Rocketstore.options = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (options = {}) {
     if (!Object.keys(options).length)
         return;
     // Format
@@ -141,10 +141,10 @@ Rocketstore.post = (collection, key, record, flags) => __awaiter(void 0, void 0,
     collection = "" + (collection || "");
     if (collection.length < 1)
         throw new Error("No valid collection name given");
-    if (!(0, filesValidators_js_1.identifierNameTest)(collection))
+    if (!(0, filesValidators_1.identifierNameTest)(collection))
         throw new Error("Collection name contains illegal characters (For a javascript identifier)");
     // Remove wildwards (unix only)
-    key = typeof key === "number" || key ? (0, filesValidators_js_1.fileNameWash)("" + key).replace(/[\*\?]/g, "") : "";
+    key = typeof key === "number" || key ? (0, filesValidators_1.fileNameWash)("" + key).replace(/[\*\?]/g, "") : "";
     if (typeof flags !== "number")
         flags = 0;
     // Insert a sequence
@@ -205,10 +205,10 @@ Rocketstore.get = (collection, key, flags, min_time, max_time) => __awaiter(void
     let count = 0;
     // Check collection name
     collection = "" + (collection || "");
-    if (collection.length > 0 && !(0, filesValidators_js_1.identifierNameTest)(collection))
+    if (collection.length > 0 && !(0, filesValidators_1.identifierNameTest)(collection))
         throw new Error("Collection name contains illegal characters (For a javascript identifier)");
     // Check key validity
-    key = (0, filesValidators_js_1.fileNameWash)("" + (key || "")).replace(/[*]{2,}/g, "*", true); // remove globstars **
+    key = (0, filesValidators_1.fileNameWash)("" + (key || "")).replace(/[*]{2,}/g, "*", true); // remove globstars **
     // Prepare search
     let scanDir = node_path_1.default.normalize(node_path_1.default.join(Rocketstore.data_storage_area, node_path_1.default.sep, collection ? collection + node_path_1.default.sep : ""));
     let wildcard = key.indexOf("*") > -1 || key.indexOf("?") > -1 || !key.length;
@@ -375,14 +375,14 @@ Rocketstore.sequence = (seq_name) => __awaiter(void 0, void 0, void 0, function*
         throw new Error("Sequence name is invalid");
     let sequence = -1;
     // Assert name
-    let name = (0, filesValidators_js_1.fileNameWash)(seq_name);
+    let name = (0, filesValidators_1.fileNameWash)(seq_name);
     if (typeof name !== "string" || name.length < 1)
         throw new Error("Sequence name is invalid");
     name += "_seq";
     const fileName = node_path_1.default.join(Rocketstore.data_storage_area, node_path_1.default.sep, name);
     //lock file
     if (Rocketstore.lock_files)
-        yield (0, files_js_1.fileLock)(Rocketstore.data_storage_area, name, Rocketstore.lock_retry_interval);
+        yield (0, files_1.fileLock)(Rocketstore.data_storage_area, name, Rocketstore.lock_retry_interval);
     try {
         const data = yield node_fs_1.default.promises.readFile(fileName, "utf8");
         sequence = parseInt(data) + 1 || 1;
@@ -409,7 +409,7 @@ Rocketstore.sequence = (seq_name) => __awaiter(void 0, void 0, void 0, function*
     }
     //unlock file
     if (Rocketstore.lock_files)
-        yield (0, files_js_1.fileUnlock)(Rocketstore.data_storage_area, name);
+        yield (0, files_1.fileUnlock)(Rocketstore.data_storage_area, name);
     return sequence;
 });
 __exportStar(require("./constants.js"), exports);

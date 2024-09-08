@@ -1,6 +1,6 @@
 {
 	"name": "rocket-store",
-	"version": "0.10.15",
+	"version": "0.10.17",
 	"description": "A simple, super fast and yet powerfull flat file database.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/mjs/index.mjs",
@@ -75,11 +75,11 @@
 		"glob-to-regexp": ">0.4.0"
 	},
 	"peerDependencies": {
-		"rollup": ">=0.66.0 <2"
+		"rollup": "^4.21.2"
 	},
 	"devDependencies": {
 		"jest": "^29.7.0",
-		"rollup": "^1.27.10",
+		"rollup": "^4.21.2",
 		"typescript": "^5.2.2"
 	}
 }

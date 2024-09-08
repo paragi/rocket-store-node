@@ -28,8 +28,8 @@ import path from "node:path";
 import { Buffer } from "node:buffer";
 import globToRegExp from "glob-to-regexp";
 
-import { fileNameWash, identifierNameTest } from "./utils/filesValidators.js";
-import { fileLock, fileUnlock } from "./utils/files.js";
+import { fileNameWash, identifierNameTest } from "./utils/filesValidators";
+import { fileLock, fileUnlock } from "./utils/files";
 
 //TODO: max items per folder, split into subfolders
 
