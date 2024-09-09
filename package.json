@@ -1,13 +1,13 @@
 {
 	"name": "rocket-store",
-	"version": "0.10.16",
+	"version": "0.10.18",
 	"description": "A simple, super fast and yet powerfull flat file database.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/mjs/index.mjs",
 	"scripts": {
 		"test": "node test/test.js",
 		"benchmark": "node benchmark/benchmark.js",
-		"fixmjs_internal": "find dist/mjs -name '*.js' -exec sed -i '' 's/\\.js/\\.mjs/g' {} \\;",
+		"fixmjs_internal": "find dist/mjs -name '*.js' -exec sed -i '' 's/\\.js/\\.mjs/g' {} \\; && find dist/mjs -name '*.d.ts' -exec sed -i '' 's/\\.js/\\.d.ts/g' {} \\;",
 		"fixmjs_rename": "find dist/mjs -name '*.js' -exec bash -c 'mv \"$0\" \"${0%.js}.mjs\"' {} \\;",
 		"build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && npm run fixmjs_internal && npm run fixmjs_rename",
 		"watch": "npm run build -- --watch src",
@@ -75,11 +75,11 @@
 		"glob-to-regexp": ">0.4.0"
 	},
 	"peerDependencies": {
-		"rollup": ">=0.66.0 <2"
+		"rollup": ">=0.66.0"
 	},
 	"devDependencies": {
 		"jest": "^29.7.0",
-		"rollup": "^1.27.10",
+		"rollup": "^4.21.2",
 		"typescript": "^5.2.2"
 	}
 }

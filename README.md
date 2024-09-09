@@ -167,6 +167,7 @@ const rs = require('rocket-store').default;
 await rs.options({
   data_storage_area : "/home/rddb/webapp",
   data_format       : rs._FORMAT_JSON,
+  check_files       : rs._FILECHECK_DEFAULT
 });
 ```
 
@@ -177,6 +178,7 @@ import * as store from "rocket-store";
 const rs = await store.Rocketstore({
 	data_storage_area : "/home/rddb/webapp",
   data_format       : rs._FORMAT_JSON,
+  check_files       : rs._FILECHECK_DEFAULT,
 });
 ```
 
@@ -184,6 +186,7 @@ const rs = await store.Rocketstore({
 |---|---|
 |data_storage_area | The directory where the database resides. The default is to use a subdirectory to the temporary directory provided by the operating system. If that doesn't work, the DOCUMENT_ROOT directory is used. |
 |data_format       | Specify which format the records are stored in. Values are: _FORMAT_NATIVE - default. and RS_FORMAT_JSON - Use JSON data format.|
+|check_files       | Specify how to strong check collection names. Values are: _FILECHECK_DEFAULT - default. and _FILECHECK_LOW - Simpler approach.|
 
 
 ## Examples
@@ -420,6 +423,13 @@ First run `npm install typescript -g` after thaht run `npm run build`.
 ---
 ## Updates
 
+0.10.18
+- Added new Option for Check files names 
+
+0.10.17
+- Correction of file path in utils for MODULE compilation
+- Update dependecies
+ 
 0.10.15
 - Unification in import / requirement of the Rocket Store package
 

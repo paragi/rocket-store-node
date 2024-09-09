@@ -1,4 +1,4 @@
-export * from "./constants.js";
+export * from "./constants.d.ts";
 export default Rocketstore;
 export function Rocketstore(set_option: any): Promise<{
     (set_option: any): Promise<any>;
@@ -15,11 +15,14 @@ export function Rocketstore(set_option: any): Promise<{
     _FORMAT_NATIVE: number;
     _FORMAT_XML: number;
     _FORMAT_PHP: number;
+    _FILECHECK_DEFAULT: number;
+    _FILECHECK_LOW: number;
     data_storage_area: string;
     keyCache: {};
     data_format: number;
     lock_retry_interval: number;
     lock_files: boolean;
+    check_files: number;
     /**
      * Set options
      * @param {Object} options
@@ -88,11 +91,14 @@ export namespace Rocketstore {
     export { _FORMAT_NATIVE };
     export { _FORMAT_XML };
     export { _FORMAT_PHP };
+    export { _FILECHECK_DEFAULT };
+    export { _FILECHECK_LOW };
     export let data_storage_area: string;
     export let keyCache: {};
     export { _FORMAT_JSON as data_format };
     export let lock_retry_interval: number;
     export let lock_files: boolean;
+    export { _FILECHECK_DEFAULT as check_files };
     /**
      * Set options
      * @param {Object} options
@@ -148,16 +154,18 @@ export namespace Rocketstore {
      */
     export function sequence(seq_name: string): Promise<number>;
 }
-import { _ORDER } from "./constants.js";
-import { _ORDER_DESC } from "./constants.js";
-import { _ORDERBY_TIME } from "./constants.js";
-import { _LOCK } from "./constants.js";
-import { _DELETE } from "./constants.js";
-import { _KEYS } from "./constants.js";
-import { _COUNT } from "./constants.js";
-import { _ADD_AUTO_INC } from "./constants.js";
-import { _ADD_GUID } from "./constants.js";
-import { _FORMAT_JSON } from "./constants.js";
-import { _FORMAT_NATIVE } from "./constants.js";
-import { _FORMAT_XML } from "./constants.js";
-import { _FORMAT_PHP } from "./constants.js";
+import { _ORDER } from "./constants.d.ts";
+import { _ORDER_DESC } from "./constants.d.ts";
+import { _ORDERBY_TIME } from "./constants.d.ts";
+import { _LOCK } from "./constants.d.ts";
+import { _DELETE } from "./constants.d.ts";
+import { _KEYS } from "./constants.d.ts";
+import { _COUNT } from "./constants.d.ts";
+import { _ADD_AUTO_INC } from "./constants.d.ts";
+import { _ADD_GUID } from "./constants.d.ts";
+import { _FORMAT_JSON } from "./constants.d.ts";
+import { _FORMAT_NATIVE } from "./constants.d.ts";
+import { _FORMAT_XML } from "./constants.d.ts";
+import { _FORMAT_PHP } from "./constants.d.ts";
+import { _FILECHECK_DEFAULT } from "./constants.d.ts";
+import { _FILECHECK_LOW } from "./constants.d.ts";

@@ -2,7 +2,7 @@
 /*
 Author: Simon Riget
 Contributor: <Anton Sychev> (anton at sychev dot xyz)
-index.js (c) 2017 - 2023
+index.js (c) 2017 - 20234
 Created:  2023-10-28 02:12:56
 Desc: Name validator and file name corrections
 License:
@@ -12,8 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fileNameWash = exports.identifierNameTest = void 0;
+exports.fileNameWash = exports.identifierNameTest = exports.identifierNameSimplyTest = void 0;
 const node_os_1 = __importDefault(require("node:os"));
+const identifierNameSimplyTest = (name) => {
+    return /^(?!(?:do|if|in|for|let|new|try|var|case|else|enum|eval|null|this|true|void|with|await|break|catch|class|const|false|super|throw|while|yield|delete|export|import|public|return|static|switch|typeof|default|extends|finally|package|private|continue|debugger|function|arguments|interface|protected|implements|instanceof)\b)/.test(name);
+};
+exports.identifierNameSimplyTest = identifierNameSimplyTest;
 /**
  *  ECMAScript 6: By Mathias Bynens mathiasbynens
  * @param {string} name
