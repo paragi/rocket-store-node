@@ -16,9 +16,17 @@ import * as store from "rocket-store";
 const rs = await store.Rocketstore({
 	data_storage_area: "./webapp",
 	data_format: store._FORMAT_JSON,
+	check_files: store._FILECHECK_LOW,
 });
 
 (async () => {
+	//invalid collection
+	try {
+		console.log("POST a invalid record:\n", await rs.post("return``", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" }));
+	} catch (e) {
+		console.log("error:", e.message);
+	}
+
 	// Change storage area from default ( <tempdir>/rsdb )
 	console.log("POST a record:\n", await rs.post("cars", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" }));
 	console.log("GET a record:\n", await rs.get("cars", ""));

@@ -1,7 +1,7 @@
 /*
 Author: Simon Riget
 Contributor: <Anton Sychev> (anton at sychev dot xyz)
-index.mjs (c) 2017 - 2023
+index.mjs (c) 2017 - 2024
 Created:  2023-10-26 02:43:48
 Desc: Rocket Store - A very simple and yet powerful file storage.
 License:
@@ -101,7 +101,7 @@ Rocketstore.options = async (options = {}) => {
     if (typeof options.lock_files === "boolean")
         Rocketstore.lock_files = options.lock_files;
     // filecheck
-    if (typeof options.check_files === "boolean")
+    if (typeof options.check_files === "number")
         Rocketstore.check_files = options.check_files;
 };
 /**

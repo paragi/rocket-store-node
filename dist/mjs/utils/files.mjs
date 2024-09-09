@@ -1,7 +1,7 @@
 /*
 Author: Simon Riget
 Contributor: <Anton Sychev> (anton at sychev dot xyz)
-index.mjs (c) 2017 - 2023
+index.mjs (c) 2017 - 2024
 Created:  2023-10-28 02:12:56
 Desc: File tools lock and unlock
 License:

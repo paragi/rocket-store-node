@@ -116,6 +116,8 @@ If no key is given, an auto-incremented sequence is used as key.
 
 If the function fails for any reason, an error is thrown.
 
+---
+
 ### Get
 Find and retrieve records, in a collection.
 ```javascript
@@ -139,6 +141,8 @@ __Return__ an array of
 
 NB: wildcards are very expensive on large datasets with most filesystems.
 (on a regular PC with +10^7 records in the collection, it might take up to a second to retreive one record, whereas one might retrieve up to 100.000 records with an exact key match)
+
+---
 
 ### Delete
 Delete one or more records, whos key match.
@@ -188,6 +192,7 @@ const rs = await store.Rocketstore({
 |data_format       | Specify which format the records are stored in. Values are: _FORMAT_NATIVE - default. and RS_FORMAT_JSON - Use JSON data format.|
 |check_files       | Specify how to strong check collection names. Values are: _FILECHECK_DEFAULT - default. and _FILECHECK_LOW - Simpler approach.|
 
+---
 
 ## Examples
 #### Storing records:
@@ -232,6 +237,7 @@ The above example will output this:
 
 
 #### Inserting an auto inceremented key
+
 File names must always be unique. If you have more than one instance of a file name, you can add an auto incremented sequence to the name:
 
 ```javascript
@@ -262,6 +268,7 @@ The above will output this:
     }
 
 #### Inserting with Globally Unique IDentifier key
+
 Another option is to add a GUID to the key.
 The GUID is a combination of a timestamp and a random sequence, formatet in accordance to  RFC 4122 (Valid but slightly less random)
 
@@ -294,7 +301,6 @@ The above will output this:
         { owner: 'Bill Bo' }
       ]
     }
-
 
 #### Mass insterts
 ```javascript
@@ -365,9 +371,11 @@ rs.delete("cars");
 ```javascript
 rs.delete();
 ```
+
 ---
 
 ## File system issue
+
 This was made with node ver 11. A compromise was struck, to compensate for the immaturity of the node file system library; There is no proper glob functionality, to filter a directory search on a low level. Instead, an array of all entries is read.
 
 This consumes a lot of memory, with a large database. There is no avoiding that, short of improving opon the node file system library. This is beyond my intentions, at this time. I hope it will be remedied by the node core team.
@@ -382,6 +390,7 @@ Therefore a time consuming locking mecahnism is implemented as symlinks.
 Both solutions will hopefully be changed, as node matures.
 
 ---
+
 ## Benchmarks
 
 Benchmarks are performed with 1 million records in in a single collection.
@@ -409,6 +418,7 @@ Deleting test data if any
 
 
 ---
+
 ## Contributions
 * I appreciate all kinds of contribution.
 * Don't hesitate to submit an issue report on [github](https://github.com/paragi/rocket-store/issues). But please provide a reproducible example.
@@ -416,12 +426,39 @@ Deleting test data if any
 * Please don't change the formatting style laid out, without a good reason. I know its not the most common standard, but its rather efficient one.
 
 ---
+
 ## Build before publish
 
 First run `npm install typescript -g` after thaht run `npm run build`.
 
 ---
+
+## Examples
+
+In the `examples` folder, there are two folders: ***CommonJS*** and ***Module***. 
+
+Enter one of them and run the command `npm i && npm run test`.
+
+
+---
+
+## Ported to other languages
+
+> [!NOTE]  
+> The same mechanism is also ported to:
+> 
+> ***PHP***: https://github.com/paragi/rocket-store
+> 
+> ***Python***: https://github.com/klich3/rocket-store-python
+
+---
+
 ## Updates
+
+0.10.19
+- Correct check_files type declaration
+- Update README.md file - added links of Rocket Store ported to other languages
+- Added correct examples by folders
 
 0.10.18
 - Added new Option for Check files names 
