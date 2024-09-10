@@ -15,13 +15,19 @@ const rs = require("rocket-store").default;
 	const options = {
 		data_storage_area: "./webapp",
 		data_format: rs._FORMAT_JSON,
+		check_files: rs._FILECHECK_LOW,
 	};
 
 	await rs.options(options);
 
-	console.log("POST a record:\n", await rs.post("cars", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" }));
+	//invalid collection
+	try {
+		console.log("POST a invalid record:\n", await rs.post("return``", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" }));
+	} catch (e) {
+		console.log("error:", e.message);
+	}
 
-	console.log("GET a record:\n", await rs.get("cars", ""));
+	console.log("POST a record:\n", await rs.post("cars", "Mercedes_Benz_GT_R", { owner: "Lisa Simpson" }));
 
 	// Post 3 records
 	await rs.post("cars", "BMW_740li", { owner: "Greg Onslow" }, rs._ADD_AUTO_INC);

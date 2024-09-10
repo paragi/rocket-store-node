@@ -1,0 +1,10 @@
+{
+	"name": "rocket-store-example",
+	"main": "index.js",
+	"scripts": {
+		"test": "node index.js"
+	},
+	"dependencies": {
+		"rocket-store": "file:../.."
+	}
+}
